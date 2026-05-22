@@ -214,7 +214,7 @@
     const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
 
     // Upload path
-    const storageUrl = `https://supabase.co{uniqueFileName}`;
+    const storageUrl = `https://supabase.co/rest/v1/beats`;
     
     try {
       const storageResponse = await fetch(storageUrl, {
