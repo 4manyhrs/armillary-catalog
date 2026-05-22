@@ -189,6 +189,7 @@
     
     // CHANGED: Fixed the array index selection to pull the chosen file correctly
     const file = fileInput.files[0];
+    const fileName = file.name;
 
     if (!file) {
       document.getElementById("uploadStatus").innerText = "Please select an audio file first.";
@@ -214,14 +215,14 @@
     const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
 
     // Upload path
-    const storageUrl = `https://purkgjbpvathnxuiultl.supabase.co/storage/v1/object/public/beats/<filename>`;
+    const storageUrl = `https://purkgjbpvathnxuiultl.supabase.co/storage/v1/object/authenticated/beats/<filename>`;
     
     try {
       const storageResponse = await fetch(storageUrl, {
         method: "POST",
         headers: {
-          "apikey": supabaseKey,
-          "Authorization": `Bearer ${supabaseKey}`,
+          "apikey": eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA,
+          "Authorization": `Bearer ${eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA}`,
           "Content-Type": "application/octet-stream"
         },
         body: file
