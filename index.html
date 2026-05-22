@@ -183,14 +183,19 @@
 
 </div>
 
+<!-- 1. Load the official Supabase client library via CDN first -->
+<script src="https://jsdelivr.net"></script>
+
 <script>
-// Define your correct public anon key globally so both functions can use it safely
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA";
+// 2. Initialize the official client cleanly
 const SUPABASE_URL = "https://purkgjbpvathnxuiultl.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA";
+
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function submitBeat() {
   const fileInput = document.getElementById('beatFile');
-  const file = fileInput.files[0];
+  const file = fileInput.files[0]; // Ensure index 0 is used
 
   if (!file) {
     document.getElementById("uploadStatus").innerText = "Please select an audio file first.";
@@ -209,59 +214,47 @@ async function submitBeat() {
 
   document.getElementById("uploadStatus").innerText = "Uploading audio file...";
 
-  // Use the timestamped clean unique filename structure
   const fileExtension = file.name.split('.').pop();
   const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
 
-  // FIXED: Standard endpoint path for uploading directly to your 'beats' bucket root folder
-  const storageUrl = `${SUPABASE_URL}/storage/v1/object/beats/${uniqueFileName}`;
-
   try {
-    const storageResponse = await fetch(storageUrl, {
-      method: "POST",
-      headers: {
-        "apikey": SUPABASE_KEY,                  // FIXED: Now uses your valid working JWT token
-        "Authorization": `Bearer ${SUPABASE_KEY}`, // FIXED: Prevents the JWS parsing validation crash
-        "Content-Type": file.type || "application/octet-stream"
-      },
-      body: file
-    });
+    // 3. Let the SDK handle the storage upload flawlessly
+    const { data: storageData, error: storageError } = await supabase.storage
+      .from('beats')
+      .upload(uniqueFileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
 
-    if (!storageResponse.ok) {
-      const storageErr = await storageResponse.text();
+    if (storageError) {
       document.getElementById("uploadStatus").innerText = "Audio upload failed. Check console.";
-      console.error("Storage Error Details:", storageErr);
+      console.error("Storage Error:", storageError.message);
       return;
     }
 
-    // Public link generated to store inside your rest database rows
-    const publicFileUrl = `${SUPABASE_URL}/storage/v1/object/public/beats/${uniqueFileName}`;
+    // 4. Cleanly grab the verified public link
+    const { data: urlData } = supabase.storage.from('beats').getPublicUrl(uniqueFileName);
+    const publicFileUrl = urlData.publicUrl;
 
     document.getElementById("uploadStatus").innerText = "Saving metadata...";
 
-    const beatData = { title, artist, mood, genre, file_url: publicFileUrl, uploader_name: artist };
+    // 5. Let the SDK save your database track record cleanly
+    const { error: dbError } = await supabase
+      .from('beats')
+      .insert([
+        { title, artist, mood, genre, file_url: publicFileUrl, uploader_name: artist }
+      ]);
 
-    const dbResponse = await fetch(`${SUPABASE_URL}/rest/v1/beats`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
-        "Prefer": "return=minimal"
-      },
-      body: JSON.stringify(beatData)
-    });
-
-    if (dbResponse.ok) {
+    if (!dbError) {
       document.getElementById("uploadStatus").innerText = "Beat uploaded successfully!";
       fileInput.value = "";
       document.getElementById("title").value = "";
       document.getElementById("artist").value = "";
       document.getElementById("mood").value = "";
       document.getElementById("genre").value = "";
-      fetchAndDisplayBeats(); // refresh the catalog table view automatically
+      fetchAndDisplayBeats(); // Refresh the grid catalog automatically
     } else {
-      console.error("Database Error Details:", await dbResponse.text());
+      console.error("Database Error:", dbError.message);
       document.getElementById("uploadStatus").innerText = "Database save failed. Check console.";
     }
 
@@ -280,30 +273,21 @@ function downloadNote() {
   link.click();
 }
 
-// Automatically load the catalog when the webpage opens
+// Automatically load the catalog when webpage opens
 window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
 
 async function fetchAndDisplayBeats() {
-  const dbUrl = `${SUPABASE_URL}/rest/v1/beats?select=*`;
-
   try {
-    const response = await fetch(dbUrl, {
-      method: "GET",
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`
-      }
-    });
+    // 6. Use SDK to read your database records easily
+    const { data: beats, error } = await supabase
+      .from('beats')
+      .select('*');
 
-    if (!response.ok) throw new Error(await response.text());
+    if (error) throw error;
 
-    const beats = await response.json();
     const tableBody = document.getElementById("beatTable");
-    
-    // Clear out the hardcoded placeholder row
-    tableBody.innerHTML = "";
+    tableBody.innerHTML = ""; // Clear existing grid layout placeholders
 
-    // Loop through your database tracks and draw them on screen
     beats.forEach((beat, index) => {
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -323,10 +307,11 @@ async function fetchAndDisplayBeats() {
     });
 
   } catch (err) {
-    console.error("Error loading catalog:", err);
+    console.error("Error loading catalog:", err.message || err);
   }
 }
 </script>
+
 
 
 </body>
