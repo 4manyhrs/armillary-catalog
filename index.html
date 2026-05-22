@@ -187,15 +187,16 @@
 <script src="https://jsdelivr.net"></script>
 
 <script>
-// 2. Initialize the official client cleanly
-const SUPABASE_URL = "https://purkgjbpvathnxuiultl.supabase.co";
+// FIXED: Variable renamed to supabaseClient to prevent "Cannot access before initialization" errors
+const SUPABASE_URL = "https://supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA";
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// FIXED: Uses the explicit window object reference to guarantee the CDN library maps correctly
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function submitBeat() {
   const fileInput = document.getElementById('beatFile');
-  const file = fileInput.files[0]; // Ensure index 0 is used
+  const file = fileInput.files[0]; // Ensure index 0 is targeted correctly
 
   if (!file) {
     document.getElementById("uploadStatus").innerText = "Please select an audio file first.";
@@ -218,8 +219,8 @@ async function submitBeat() {
   const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
 
   try {
-    // 3. Let the SDK handle the storage upload flawlessly
-    const { data: storageData, error: storageError } = await supabase.storage
+    // Uses the corrected global client instance wrapper
+    const { data: storageData, error: storageError } = await supabaseClient.storage
       .from('beats')
       .upload(uniqueFileName, file, {
         cacheControl: '3600',
@@ -232,14 +233,12 @@ async function submitBeat() {
       return;
     }
 
-    // 4. Cleanly grab the verified public link
-    const { data: urlData } = supabase.storage.from('beats').getPublicUrl(uniqueFileName);
+    const { data: urlData } = supabaseClient.storage.from('beats').getPublicUrl(uniqueFileName);
     const publicFileUrl = urlData.publicUrl;
 
     document.getElementById("uploadStatus").innerText = "Saving metadata...";
 
-    // 5. Let the SDK save your database track record cleanly
-    const { error: dbError } = await supabase
+    const { error: dbError } = await supabaseClient
       .from('beats')
       .insert([
         { title, artist, mood, genre, file_url: publicFileUrl, uploader_name: artist }
@@ -252,7 +251,7 @@ async function submitBeat() {
       document.getElementById("artist").value = "";
       document.getElementById("mood").value = "";
       document.getElementById("genre").value = "";
-      fetchAndDisplayBeats(); // Refresh the grid catalog automatically
+      fetchAndDisplayBeats(); // Refresh the grid view
     } else {
       console.error("Database Error:", dbError.message);
       document.getElementById("uploadStatus").innerText = "Database save failed. Check console.";
@@ -273,20 +272,19 @@ function downloadNote() {
   link.click();
 }
 
-// Automatically load the catalog when webpage opens
+// Automatically load the catalog when the page initializes
 window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
 
 async function fetchAndDisplayBeats() {
   try {
-    // 6. Use SDK to read your database records easily
-    const { data: beats, error } = await supabase
+    const { data: beats, error } = await supabaseClient
       .from('beats')
       .select('*');
 
     if (error) throw error;
 
     const tableBody = document.getElementById("beatTable");
-    tableBody.innerHTML = ""; // Clear existing grid layout placeholders
+    tableBody.innerHTML = ""; 
 
     beats.forEach((beat, index) => {
       const row = document.createElement("tr");
@@ -311,8 +309,5 @@ async function fetchAndDisplayBeats() {
   }
 }
 </script>
-
-
-
 </body>
 </html>
