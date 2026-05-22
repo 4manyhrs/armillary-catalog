@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="connect-src 'self' data: blob: https://upload.uploadcare.com https://supabase.co;">
+
+<title>Armillary Beat Catalog</title>
+
+<!-- Uploadcare public key -->
+<script>
+  UPLOADCARE_PUBLIC_KEY = '3ba7de1685e2cfc7657d';
+</script>
+<script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+
+<style>
+  body {
+    background: radial-gradient(circle at top left, #0D0D0F, #3A2F4F);
+    color: #E6E6EB;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Poppins", sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: auto;
+  }
+
+  .glass-box {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 32px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  h2 {
+    margin-top: 0;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  p {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  button {
+    background: #FF7A1A;
+    border: none;
+    color: white;
+    padding: 9px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  button:hover {
+    opacity: 0.9;
+  }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+
+  th {
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+  }
+
+  audio {
+    width: 160px;
+  }
+
+  /* Notepad */
+  textarea {
+    width: 100%;
+    height: 200px;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255,255,255,0.08);
+    color: #E6E6EB;
+    font-size: 15px;
+    resize: vertical;
+    outline: none;
+  }
+
+  /* Target text inputs only so we don't break uploadcare widgets */
+  input[type="text"], select {
+    padding: 8px;
+    width: 100%;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- BEAT CATALOG -->
+<div class="glass-box">
+  <h2>Armillary Beat Catalog</h2>
+  <p>Beats uploaded by producers will appear here automatically once we connect the dynamic loader.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Artist</th>
+        <th>Mood</th>
+        <th>Genre</th>
+        <th>Play</th>
+      </tr>
+    </thead>
+    <tbody id="beatTable">
+      <!-- Temporary example row -->
+      <tr>
+        <td>1</td>
+        <td>Solar Drift</td>
+        <td>LaJoJoe</td>
+        <td>Ambient / Cosmic</td>
+        <td>Experimental</td>
+        <td>
+          <audio controls>
+            <source src="https://ucarecdn.com/FILE_ID_HERE/solar_drift.mp3" type="audio/mpeg">
+          </audio>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- NEW: UPLOADCARE → SUPABASE UPLOADER -->
+<div class="glass-box">
+  <h2>Upload a Beat</h2>
+
+  <!-- Uploadcare uploader -->
+  <input type="hidden"
+         role="uploadcare-uploader"
+         id="beatFile"
+         data-public-key="3ba7de1685e2cfc7657d"
+         data-multiple="false"
+         data-tabs="file url camera"
+         data-clearable="true" />
+
+  <!-- Metadata form -->
+  <div style="margin-top:15px;">
+    <input type="text" id="title" placeholder="Beat Title">
+    <input type="text" id="artist" placeholder="Artist / Producer Name">
+    <input type="text" id="mood" placeholder="Mood (optional)">
+    <input type="text" id="genre" placeholder="Genre (optional)">
+    <button onclick="submitBeat()">Submit Beat</button>
+  </div>
+
+  <p id="uploadStatus" style="margin-top:10px;"></p>
+</div>
+
+<!-- NOTEPAD -->
+<div class="glass-box">
+  <h2>Session Notepad</h2>
+  <p>Jot ideas, links, or notes while you listen. Download when you’re done.</p>
+  <textarea id="noteArea" placeholder="Write notes here..."></textarea>
+  <br><br>
+  <button onclick="downloadNote()">Download Note</button>
+</div>
+
+</div>
+
+<script>
+  async function submitBeat() {
+    const widget = uploadcare.Widget('#beatFile');
+    const file = widget.value();
+
+    if (!file) {
+      document.getElementById("uploadStatus").innerText = "Please upload a file first.";
+      return;
+    }
+
+    document.getElementById("uploadStatus").innerText = "Getting file link...";
+    
+    // Resolve the Uploadcare promise to get the URL
+    const info = await file.done();
+    const fileUrl = info.cdnUrl;
+
+    const title = document.getElementById("title").value;
+    const artist = document.getElementById("artist").value;
+    const mood = document.getElementById("mood").value;
+    const genre = document.getElementById("genre").value;
+
+    if (!title || !artist) {
+      document.getElementById("uploadStatus").innerText = "Title and Artist are required.";
+      return;
+    }
+
+    const beatData = {
+      title: title,
+      artist: artist,
+      mood: mood,
+      genre: genre,
+      file_url: fileUrl,
+      uploader_name: artist
+    };
+
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA";
+    
+    // FIX: Appended your table name to the endpoint url (Replace 'YOUR_TABLE_NAME')
+    const url = "https://supabase.co/beats";
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": supabaseKey,
+          "Authorization": `Bearer ${supabaseKey}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(beatData)
+      });
+
+      if (response.ok) {
+        document.getElementById("uploadStatus").innerText = "Beat uploaded successfully!";
+        // Clear form fields
+        document.getElementById("title").value = "";
+        document.getElementById("artist").value = "";
+        document.getElementById("mood").value = "";
+        document.getElementById("genre").value = "";
+        widget.value(null); 
+      } else {
+        const errText = await response.text();
+        document.getElementById("uploadStatus").innerText = "Upload failed. Check console.";
+        console.error("Supabase Error:", errText);
+      }
+    } catch (err) {
+      document.getElementById("uploadStatus").innerText = "Network error. Check console.";
+      console.error("Fetch Error:", err);
+    }
+  }
+
+  function downloadNote() {
+    const text = document.getElementById("noteArea").value;
+    const blob = new Blob([text], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "armillary-note.txt";
+    link.click();
+  }
+</script>
+
+</body>
+</html>
