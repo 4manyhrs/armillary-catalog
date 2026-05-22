@@ -301,8 +301,8 @@ async function fetchAndDisplayBeats() {
     const response = await fetch(dbUrl, {
       method: "GET",
       headers: {
-        "apikey": supabaseKey,
-        "Authorization": `Bearer ${supabaseKey}`
+        "apikey": eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA,
+        "Authorization": `Bearer ${eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA}`
       }
     });
 
