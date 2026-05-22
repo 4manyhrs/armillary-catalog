@@ -2,15 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="connect-src 'self' data: blob: https://upload.uploadcare.com https://supabase.co;">
-
 <title>Armillary Beat Catalog</title>
-
-<!-- Uploadcare public key -->
-<script>
-  UPLOADCARE_PUBLIC_KEY = '3ba7de1685e2cfc7657d';
-</script>
-<script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 
 <style>
   body {
@@ -103,15 +95,22 @@
     outline: none;
   }
 
-  /* Target text inputs only so we don't break uploadcare widgets */
-  input[type="text"], select {
+  /* Input fields styling */
+  input[type="text"], input[type="file"], select {
     padding: 8px;
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     border-radius: 8px;
     border: none;
     outline: none;
     box-sizing: border-box;
+    background: rgba(255,255,255,0.08);
+    color: #E6E6EB;
+  }
+  
+  input[type="file"] {
+    background: transparent;
+    padding: 5px 0;
   }
 </style>
 </head>
@@ -145,7 +144,7 @@
         <td>Experimental</td>
         <td>
           <audio controls>
-            <source src="https://ucarecdn.com/FILE_ID_HERE/solar_drift.mp3" type="audio/mpeg">
+            <source src="https://ucarecdn.com" type="audio/mpeg">
           </audio>
         </td>
       </tr>
@@ -153,21 +152,16 @@
   </table>
 </div>
 
-<!-- NEW: UPLOADCARE → SUPABASE UPLOADER -->
+<!-- FREE SUPABASE UPLOADER -->
 <div class="glass-box">
   <h2>Upload a Beat</h2>
 
-  <!-- Uploadcare uploader -->
-  <input type="hidden"
-         role="uploadcare-uploader"
-         id="beatFile"
-         data-public-key="3ba7de1685e2cfc7657d"
-         data-multiple="false"
-         data-tabs="file url camera"
-         data-clearable="true" />
+  <!-- Clean, unrestricted standard file input -->
+  <label style="font-size: 12px; opacity: 0.7; display: block; margin-bottom: 4px;">Choose Audio File (.mp3)</label>
+  <input type="file" id="beatFile" accept="audio/mp3, audio/mpeg">
 
   <!-- Metadata form -->
-  <div style="margin-top:15px;">
+  <div>
     <input type="text" id="title" placeholder="Beat Title">
     <input type="text" id="artist" placeholder="Artist / Producer Name">
     <input type="text" id="mood" placeholder="Mood (optional)">
@@ -191,19 +185,13 @@
 
 <script>
   async function submitBeat() {
-    const widget = uploadcare.Widget('#beatFile');
-    const file = widget.value();
+    const fileInput = document.getElementById('beatFile');
+    const file = fileInput.files[0];
 
     if (!file) {
-      document.getElementById("uploadStatus").innerText = "Please upload a file first.";
+      document.getElementById("uploadStatus").innerText = "Please select an audio file first.";
       return;
     }
-
-    document.getElementById("uploadStatus").innerText = "Getting file link...";
-    
-    // Resolve the Uploadcare promise to get the URL
-    const info = await file.done();
-    const fileUrl = info.cdnUrl;
 
     const title = document.getElementById("title").value;
     const artist = document.getElementById("artist").value;
@@ -215,22 +203,54 @@
       return;
     }
 
-    const beatData = {
-      title: title,
-      artist: artist,
-      mood: mood,
-      genre: genre,
-      file_url: fileUrl,
-      uploader_name: artist
-    };
+    document.getElementById("uploadStatus").innerText = "Uploading audio file to Supabase...";
 
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA";
     
-    // FIX: Appended your table name to the endpoint url (Replace 'YOUR_TABLE_NAME')
-    const url = "https://supabase.co/beats";
+    // Create a unique clean filename to prevent overwrite bugs
+    const fileExtension = file.name.split('.').pop();
+    const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
 
+    // 1. Upload audio directly into your Supabase storage bucket
+    const storageUrl = `https://supabase.co{uniqueFileName}`;
+    
     try {
-      const response = await fetch(url, {
+      const storageResponse = await fetch(storageUrl, {
+        method: "POST",
+        headers: {
+          "apikey": supabaseKey,
+          "Authorization": `Bearer ${supabaseKey}`,
+          "Content-Type": file.type
+        },
+        body: file
+      });
+
+      if (!storageResponse.ok) {
+        const storageErr = await storageResponse.text();
+        document.getElementById("uploadStatus").innerText = "Audio asset upload failed. Check console.";
+        console.error("Storage Error:", storageErr);
+        return;
+      }
+
+      // Generate the final public file link path
+      const publicFileUrl = `https://supabase.co{uniqueFileName}`;
+
+      document.getElementById("uploadStatus").innerText = "Saving track metadata details...";
+
+      const beatData = {
+        title: title,
+        artist: artist,
+        mood: mood,
+        genre: genre,
+        file_url: publicFileUrl,
+        uploader_name: artist
+      };
+
+      // 2. Insert metadata payload row directly into your Supabase database table
+      // CHANGE 'beats' below if your database table is named something else!
+      const dbUrl = "https://supabase.co";
+
+      const dbResponse = await fetch(dbUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -241,22 +261,23 @@
         body: JSON.stringify(beatData)
       });
 
-      if (response.ok) {
+      if (dbResponse.ok) {
         document.getElementById("uploadStatus").innerText = "Beat uploaded successfully!";
-        // Clear form fields
+        // Clear all input elements
+        fileInput.value = "";
         document.getElementById("title").value = "";
         document.getElementById("artist").value = "";
         document.getElementById("mood").value = "";
         document.getElementById("genre").value = "";
-        widget.value(null); 
       } else {
-        const errText = await response.text();
-        document.getElementById("uploadStatus").innerText = "Upload failed. Check console.";
-        console.error("Supabase Error:", errText);
+        const dbErr = await dbResponse.text();
+        document.getElementById("uploadStatus").innerText = "Database save failed. Check console.";
+        console.error("Database Error:", dbErr);
       }
+
     } catch (err) {
       document.getElementById("uploadStatus").innerText = "Network error. Check console.";
-      console.error("Fetch Error:", err);
+      console.error("System Error:", err);
     }
   }
 
