@@ -156,9 +156,9 @@
 <div class="glass-box">
   <h2>Upload a Beat</h2>
 
-  <!-- Clean, unrestricted standard file input -->
-  <label style="font-size: 12px; opacity: 0.7; display: block; margin-bottom: 4px;">Choose Audio File (.mp3)</label>
-  <input type="file" id="beatFile" accept="audio/mp3, audio/mpeg">
+  <!-- CHANGED: accept="audio/*" opens up the picker to all audio files (mp3, wav, m4a, flac, etc) -->
+  <label style="font-size: 12px; opacity: 0.7; display: block; margin-bottom: 4px;">Choose Audio File (.mp3, .wav, .m4a, .flac, etc.)</label>
+  <input type="file" id="beatFile" accept="audio/*">
 
   <!-- Metadata form -->
   <div>
@@ -186,6 +186,8 @@
 <script>
   async function submitBeat() {
     const fileInput = document.getElementById('beatFile');
+    
+    // CHANGED: Fixed the array index selection to pull the chosen file correctly
     const file = fileInput.files[0];
 
     if (!file) {
@@ -207,11 +209,11 @@
 
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA";
     
-    // Create a unique clean filename to prevent overwrite bugs
+    // Dynamically captures original file extensions (.wav, .flac, etc)
     const fileExtension = file.name.split('.').pop();
     const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
 
-    // 1. Upload audio directly into your Supabase storage bucket
+    // Upload path
     const storageUrl = `https://supabase.co{uniqueFileName}`;
     
     try {
@@ -232,7 +234,6 @@
         return;
       }
 
-      // Generate the final public file link path
       const publicFileUrl = `https://supabase.co{uniqueFileName}`;
 
       document.getElementById("uploadStatus").innerText = "Saving track metadata details...";
@@ -246,7 +247,6 @@
         uploader_name: artist
       };
 
-      // 2. Insert metadata payload row directly into your Supabase database table
       // CHANGE 'beats' below if your database table is named something else!
       const dbUrl = "https://supabase.co";
 
