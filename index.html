@@ -289,6 +289,54 @@
     link.download = "armillary-note.txt";
     link.click();
   }
+  // Automatically load the catalog when the webpage opens
+window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
+
+async function fetchAndDisplayBeats() {
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA";
+  const dbUrl = "https://supabase.co*";
+
+  try {
+    const response = await fetch(dbUrl, {
+      method: "GET",
+      headers: {
+        "apikey": supabaseKey,
+        "Authorization": `Bearer ${supabaseKey}`
+      }
+    });
+
+    if (!response.ok) throw new Error(await response.text());
+
+    const beats = await response.json();
+    const tableBody = document.getElementById("beatTable");
+    
+    // Clear out the hardcoded placeholder row
+    tableBody.innerHTML = "";
+
+    // Loop through your database tracks and draw them on screen
+    beats.forEach((beat, index) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${beat.title || 'Untitled'}</td>
+        <td>${beat.artist || 'Unknown'}</td>
+        <td>${beat.mood || '-'}</td>
+        <td>${beat.genre || '-'}</td>
+        <td>
+          <audio controls>
+            <source src="${beat.file_url}" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+  } catch (err) {
+    console.error("Error loading catalog:", err);
+  }
+}
+
 </script>
 
 </body>
