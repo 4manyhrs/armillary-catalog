@@ -55,6 +55,7 @@
     opacity: 0.9;
   }
 
+  /* Table */
   table {
     width: 100%;
     border-collapse: collapse;
@@ -80,6 +81,7 @@
     width: 160px;
   }
 
+  /* Notepad */
   textarea {
     width: 100%;
     height: 200px;
@@ -93,6 +95,7 @@
     outline: none;
   }
 
+  /* Input fields styling */
   input[type="text"], input[type="file"], select {
     padding: 8px;
     width: 100%;
@@ -132,7 +135,7 @@
       </tr>
     </thead>
     <tbody id="beatTable">
-      <!-- Placeholder row (will be cleared on load) -->
+      <!-- Temporary example row -->
       <tr>
         <td>1</td>
         <td>Solar Drift</td>
@@ -143,3 +146,198 @@
           <audio controls>
             <source src="https://ucarecdn.com" type="audio/mpeg">
           </audio>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FREE SUPABASE UPLOADER -->
+<div class="glass-box">
+  <h2>Upload a Beat</h2>
+
+  <!-- CHANGED: accept="audio/*" opens up the picker to all audio files (mp3, wav, m4a, flac, etc) -->
+  <label style="font-size: 12px; opacity: 0.7; display: block; margin-bottom: 4px;">Choose Audio File (.mp3, .wav, .m4a, .flac, etc.)</label>
+  <input type="file" id="beatFile" accept="audio/*">
+
+  <!-- Metadata form -->
+  <div>
+    <input type="text" id="title" placeholder="Beat Title">
+    <input type="text" id="artist" placeholder="Artist / Producer Name">
+    <input type="text" id="mood" placeholder="Mood (optional)">
+    <input type="text" id="genre" placeholder="Genre (optional)">
+    <button onclick="submitBeat()">Submit Beat</button>
+  </div>
+
+  <p id="uploadStatus" style="margin-top:10px;"></p>
+</div>
+
+<!-- NOTEPAD -->
+<div class="glass-box">
+  <h2>Session Notepad</h2>
+  <p>Jot ideas, links, or notes while you listen. Download when you’re done.</p>
+  <textarea id="noteArea" placeholder="Write notes here..."></textarea>
+  <br><br>
+  <button onclick="downloadNote()">Download Note</button>
+</div>
+
+</div>
+
+<script>
+  async function submitBeat() {
+    const fileInput = document.getElementById('beatFile');
+    
+    // CHANGED: Fixed the array index selection to pull the chosen file correctly
+    const file = fileInput.files[0];
+
+    if (!file) {
+      document.getElementById("uploadStatus").innerText = "Please select an audio file first.";
+      return;
+    }
+
+    const title = document.getElementById("title").value;
+    const artist = document.getElementById("artist").value;
+    const mood = document.getElementById("mood").value;
+    const genre = document.getElementById("genre").value;
+
+    if (!title || !artist) {
+      document.getElementById("uploadStatus").innerText = "Title and Artist are required.";
+      return;
+    }
+
+    document.getElementById("uploadStatus").innerText = "Uploading audio file to Supabase...";
+
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA";
+    
+    // Dynamically captures original file extensions (.wav, .flac, etc)
+    const fileExtension = file.name.split('.').pop();
+    const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
+
+    // Upload path
+    const storageUrl = `https://purkgjbpvathnxuiultl.supabase.co/storage/v1/object/public/beats/<filename>`;
+    
+    try {
+      const storageResponse = await fetch(storageUrl, {
+        method: "POST",
+        headers: {
+          "apikey": supabaseKey,
+          "Authorization": `Bearer ${supabaseKey}`,
+          "Content-Type": "application/octet-stream"
+        },
+        body: file
+      });
+
+      if (!storageResponse.ok) {
+        const storageErr = await storageResponse.text();
+        document.getElementById("uploadStatus").innerText = "Audio asset upload failed. Check console.";
+        console.error("Storage Error:", storageErr);
+        return;
+      }
+
+      const publicFileUrl = `https://purkgjbpvathnxuiultl.supabase.co/storage/v1/object/public/beats`;
+
+      document.getElementById("uploadStatus").innerText = "Saving track metadata details...";
+
+      const beatData = {
+        title: title,
+        artist: artist,
+        mood: mood,
+        genre: genre,
+        file_url: publicFileUrl,
+        uploader_name: artist
+      };
+
+      // CHANGE 'beats' below if your database table is named something else!
+      const dbUrl = "https://purkgjbpvathnxuiultl.supabase.co/rest/v1/beats?select=*";
+
+      const dbResponse = await fetch(dbUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": supabaseKey,
+          "Authorization": `Bearer ${supabaseKey}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(beatData)
+      });
+
+      if (dbResponse.ok) {
+        document.getElementById("uploadStatus").innerText = "Beat uploaded successfully!";
+        // Clear all input elements
+        fileInput.value = "";
+        document.getElementById("title").value = "";
+        document.getElementById("artist").value = "";
+        document.getElementById("mood").value = "";
+        document.getElementById("genre").value = "";
+      } else {
+        const dbErr = await dbResponse.text();
+        document.getElementById("uploadStatus").innerText = "Database save failed. Check console.";
+        console.error("Database Error:", dbErr);
+      }
+
+    } catch (err) {
+      document.getElementById("uploadStatus").innerText = "Network error. Check console.";
+      console.error("System Error:", err);
+    }
+  }
+
+  function downloadNote() {
+    const text = document.getElementById("noteArea").value;
+    const blob = new Blob([text], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "armillary-note.txt";
+    link.click();
+  }
+  // Automatically load the catalog when the webpage opens
+window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
+
+async function fetchAndDisplayBeats() {
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmtnamJwdmF0aG54dWl1bHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzUxNDUsImV4cCI6MjA5NTA1MTE0NX0.p1yMsIQUnPrvzO42mla1qpJQOVYDS2cvB5m0r0BQOmA";
+  const dbUrl = "https://purkgjbpvathnxuiultl.supabase.co/rest/v1/beats?select=*";
+
+  try {
+    const response = await fetch(dbUrl, {
+      method: "GET",
+      headers: {
+        "apikey": supabaseKey,
+        "Authorization": `Bearer ${supabaseKey}`
+      }
+    });
+
+    if (!response.ok) throw new Error(await response.text());
+
+    const beats = await response.json();
+    const tableBody = document.getElementById("beatTable");
+    
+    // Clear out the hardcoded placeholder row
+    tableBody.innerHTML = "";
+
+    // Loop through your database tracks and draw them on screen
+    beats.forEach((beat, index) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${beat.title || 'Untitled'}</td>
+        <td>${beat.artist || 'Unknown'}</td>
+        <td>${beat.mood || '-'}</td>
+        <td>${beat.genre || '-'}</td>
+        <td>
+          <audio controls>
+            <source src="${beat.file_url}" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+  } catch (err) {
+    console.error("Error loading catalog:", err);
+  }
+}
+
+</script>
+
+</body>
+</html>
