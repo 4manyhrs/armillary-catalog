@@ -275,7 +275,7 @@ function downloadNote() {
 // Automatically load the catalog when the page initializes
 window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
 
-async function fetchAndDisplayBeats() {
+  async function fetchAndDisplayBeats() {
   try {
     const { data: beats, error } = await supabaseClient
       .from('beats')
@@ -284,10 +284,19 @@ async function fetchAndDisplayBeats() {
     if (error) throw error;
 
     const tableBody = document.getElementById("beatTable");
+    
+    // Safety check: ensure your HTML container actually exists
+    if (!tableBody) {
+      console.error("Error: Could not find HTML element with id 'beatTable'");
+      return;
+    }
+    
     tableBody.innerHTML = ""; 
 
     beats.forEach((beat, index) => {
       const row = document.createElement("tr");
+      
+      // FIXED: Moved beat.file_url directly into the <audio> tag src attribute
       row.innerHTML = `
         <td>${index + 1}</td>
         <td>${beat.title || 'Untitled'}</td>
@@ -295,8 +304,7 @@ async function fetchAndDisplayBeats() {
         <td>${beat.mood || '-'}</td>
         <td>${beat.genre || '-'}</td>
         <td>
-          <audio controls>
-            <source src="${beat.file_url}" type="audio/mpeg">
+          <audio src="${beat.file_url}" controls preload="metadata">
             Your browser does not support the audio element.
           </audio>
         </td>
@@ -308,6 +316,8 @@ async function fetchAndDisplayBeats() {
     console.error("Error loading catalog:", err.message || err);
   }
 }
+
+
 </script>
 </body>
 </html>
