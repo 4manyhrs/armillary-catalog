@@ -157,7 +157,7 @@
   <h2>Upload a Beat</h2>
 
   <!-- CHANGED: accept="audio/*" opens up the picker to all audio files (mp3, wav, m4a, flac, etc) -->
-  <label style="font-size: 12px; opacity: 0.7; display: block; margin-bottom: 4px;">Choose Audio File (.mp3, .wav, .m4a, .flac, etc.)</label>
+  <label style="font-size: 12px; opacity: 0.7; display: block; margin-bottom: 4px;">Upload (.mp3, .wav, .m4a, .flac, etc.)</label>
   <input type="file" id="beatFile" accept="audio/*">
 
   <!-- Metadata form -->
@@ -175,7 +175,7 @@
 <!-- NOTEPAD -->
 <div class="glass-box">
   <h2>Session Notepad</h2>
-  <p>Jot ideas, links, or notes while you listen. Download when you’re done.</p>
+  <p>Rap Pad.</p>
   <textarea id="noteArea" placeholder="Write notes here..."></textarea>
   <br><br>
   <button onclick="downloadNote()">Download Note</button>
@@ -184,7 +184,7 @@
 </div>
 
 <!-- 1. Load the official Supabase client library via CDN first -->
-<script src="https://jsdelivr.net"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 // FIXED: Variable renamed to supabaseClient to prevent "Cannot access before initialization" errors
