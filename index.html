@@ -81,6 +81,44 @@
     width: 160px;
   }
 
+  .audio-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.08);
+  padding: 8px 12px;
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.audio-player button {
+  background: #FF7A1A;
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.audio-player button:hover {
+  opacity: 0.85;
+}
+
+.audio-player .seek {
+  flex: 1;
+}
+
+.audio-player .volume {
+  width: 70px;
+}
+
+.time {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+
   /* Notepad */
   textarea {
     width: 100%;
@@ -304,20 +342,91 @@ window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
         <td>${beat.mood || '-'}</td>
         <td>${beat.genre || '-'}</td>
         <td>
-          <audio src="${beat.file_url}" controls preload="metadata">
+          <div class="audio-player" data-src="${beat.file_url}">
+  <button class="play-btn">▶</button>
+  <span class="time current">0:00</span>
+
+  <input type="range" class="seek" value="0" min="0" max="100">
+
+  <span class="time duration">0:00</span>
+
+  <button class="skip back">-10</button>
+  <button class="skip forward">+10</button>
+
+  <input type="range" class="volume" min="0" max="1" step="0.01" value="1">
+</div>
+
             Your browser does not support the audio element.
           </audio>
         </td>
       `;
       tableBody.appendChild(row);
     });
-
+    
+ initCustomPlayers();
+    
   } catch (err) {
     console.error("Error loading catalog:", err.message || err);
   }
 }
 
-
 </script>
+  <script>
+function initCustomPlayers() {
+  document.querySelectorAll(".audio-player").forEach(player => {
+    const audio = new Audio(player.dataset.src);
+
+    const playBtn = player.querySelector(".play-btn");
+    const seek = player.querySelector(".seek");
+    const volume = player.querySelector(".volume");
+    const currentTimeEl = player.querySelector(".current");
+    const durationEl = player.querySelector(".duration");
+    const backBtn = player.querySelector(".back");
+    const forwardBtn = player.querySelector(".forward");
+
+    playBtn.addEventListener("click", () => {
+      if (audio.paused) {
+        audio.play();
+        playBtn.textContent = "⏸";
+      } else {
+        audio.pause();
+        playBtn.textContent = "▶";
+      }
+    });
+
+    audio.addEventListener("loadedmetadata", () => {
+      durationEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener("timeupdate", () => {
+      seek.value = (audio.currentTime / audio.duration) * 100;
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+    });
+
+    seek.addEventListener("input", () => {
+      audio.currentTime = (seek.value / 100) * audio.duration;
+    });
+
+    volume.addEventListener("input", () => {
+      audio.volume = volume.value;
+    });
+
+    backBtn.addEventListener("click", () => {
+      audio.currentTime = Math.max(0, audio.currentTime - 10);
+    });
+
+    forwardBtn.addEventListener("click", () => {
+      audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
+    });
+  });
+}
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+}
+</script>
+
 </body>
 </html>
