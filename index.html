@@ -167,6 +167,34 @@
     background: transparent;
     padding: 5px 0;
   }
+
+  .pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+#pageInfo {
+  opacity: 0.7;
+  font-size: 14px;
+}
+
 </style>
 </head>
 
@@ -179,6 +207,12 @@
   <p>Beats uploaded by producers will appear here automatically once we connect the dynamic loader.</p>
 
 <div id="beatList" class="beat-list"></div>
+  <div class="pagination">
+  <button id="prevPage">Previous</button>
+  <span id="pageInfo"></span>
+  <button id="nextPage">Next</button>
+</div>
+
 
 </div>
 
@@ -312,6 +346,14 @@ window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
       .select('*');
 
     if (error) throw error;
+    
+      allBeats = beats; // store all beats
+    renderPage();     // render the first page
+
+  } catch (err) {
+    console.error("Error loading catalog:", err.message || err);
+  }
+}
 
    const list = document.getElementById("beatList");
 list.innerHTML = "";
@@ -404,6 +446,73 @@ function formatTime(sec) {
   const s = Math.floor(sec % 60).toString().padStart(2, "0");
   return `${m}:${s}`;
 }
+
+    let currentPage = 1;
+const beatsPerPage = 7;
+let allBeats = [];
+
+    function renderPage() {
+  const list = document.getElementById("beatList");
+  list.innerHTML = "";
+
+  const start = (currentPage - 1) * beatsPerPage;
+  const end = start + beatsPerPage;
+  const pageBeats = allBeats.slice(start, end);
+
+  pageBeats.forEach(beat => {
+    const card = document.createElement("div");
+    card.className = "beat-card";
+
+    card.innerHTML = `
+      <div class="beat-info">
+        <h3>${beat.title}</h3>
+        <p>${beat.artist}</p>
+        <p class="meta">${beat.mood || ''} • ${beat.genre || ''}</p>
+      </div>
+
+      <div class="audio-player" data-src="${beat.file_url}">
+        <button class="play-btn">▶</button>
+        <span class="time current">0:00</span>
+        <input type="range" class="seek" value="0" min="0" max="100">
+        <span class="time duration">0:00</span>
+        <button class="skip back">-10</button>
+        <button class="skip forward">+10</button>
+        <input type="range" class="volume" min="0" max="1" step="0.01" value="1">
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
+
+  initCustomPlayers();
+  updatePaginationUI();
+}
+    function updatePaginationUI() {
+  const totalPages = Math.ceil(allBeats.length / beatsPerPage);
+
+  document.getElementById("pageInfo").textContent =
+    `Page ${currentPage} of ${totalPages}`;
+
+  document.getElementById("prevPage").disabled = currentPage === 1;
+  document.getElementById("nextPage").disabled = currentPage === totalPages;
+}
+
+document.getElementById("prevPage").addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    renderPage();
+  }
+});
+
+document.getElementById("nextPage").addEventListener("click", () => {
+  const totalPages = Math.ceil(allBeats.length / beatsPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderPage();
+  }
+});
+
+
 </script>
 
 </body>
