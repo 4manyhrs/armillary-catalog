@@ -55,31 +55,36 @@
     opacity: 0.9;
   }
 
-  /* Table */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 12px;
-    font-size: 14px;
-  }
+.beat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-  th, td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid rgba(255,255,255,0.12);
-  }
+.beat-card {
+  background: rgba(255,255,255,0.06);
+  padding: 20px;
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
 
-  th {
-    font-weight: 500;
-    text-transform: uppercase;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    opacity: 0.8;
-  }
+.beat-info h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
 
-  audio {
-    width: 160px;
-  }
+.beat-info p {
+  margin: 4px 0;
+  opacity: 0.8;
+}
+
+.meta {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
 
   .audio-player {
   display: flex;
@@ -161,33 +166,8 @@
   <h2>Armillary Beat Catalog</h2>
   <p>Beats uploaded by producers will appear here automatically once we connect the dynamic loader.</p>
 
-  <table>
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Title</th>
-        <th>Artist</th>
-        <th>Mood</th>
-        <th>Genre</th>
-        <th>Play</th>
-      </tr>
-    </thead>
-    <tbody id="beatTable">
-      <!-- Temporary example row -->
-      <tr>
-        <td>1</td>
-        <td>Solar Drift</td>
-        <td>LaJoJoe</td>
-        <td>Ambient / Cosmic</td>
-        <td>Experimental</td>
-        <td>
-          <audio controls>
-            <source src="https://ucarecdn.com" type="audio/mpeg">
-          </audio>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+<div id="beatList" class="beat-list"></div>
+
 </div>
 
 <!-- FREE SUPABASE UPLOADER -->
@@ -331,38 +311,34 @@ window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
     
     tableBody.innerHTML = ""; 
 
-    beats.forEach((beat, index) => {
-      const row = document.createElement("tr");
-      
-      // FIXED: Moved beat.file_url directly into the <audio> tag src attribute
-      row.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${beat.title || 'Untitled'}</td>
-        <td>${beat.artist || 'Unknown'}</td>
-        <td>${beat.mood || '-'}</td>
-        <td>${beat.genre || '-'}</td>
-        <td>
-          <div class="audio-player" data-src="${beat.file_url}">
-  <button class="play-btn">▶</button>
-  <span class="time current">0:00</span>
+    const list = document.getElementById("beatList");
+list.innerHTML = "";
 
-  <input type="range" class="seek" value="0" min="0" max="100">
+beats.forEach(beat => {
+  const card = document.createElement("div");
+  card.className = "beat-card";
 
-  <span class="time duration">0:00</span>
+  card.innerHTML = `
+    <div class="beat-info">
+      <h3>${beat.title}</h3>
+      <p>${beat.artist}</p>
+      <p class="meta">${beat.mood || ''} • ${beat.genre || ''}</p>
+    </div>
 
-  <button class="skip back">-10</button>
-  <button class="skip forward">+10</button>
+    <div class="audio-player" data-src="${beat.file_url}">
+      <button class="play-btn">▶</button>
+      <span class="time current">0:00</span>
+      <input type="range" class="seek" value="0" min="0" max="100">
+      <span class="time duration">0:00</span>
+      <button class="skip back">-10</button>
+      <button class="skip forward">+10</button>
+      <input type="range" class="volume" min="0" max="1" step="0.01" value="1">
+    </div>
+  `;
 
-  <input type="range" class="volume" min="0" max="1" step="0.01" value="1">
-</div>
+  list.appendChild(card);
+});
 
-            Your browser does not support the audio element.
-          </audio>
-        </td>
-      `;
-      tableBody.appendChild(row);
-    });
-    
  initCustomPlayers();
     
   } catch (err) {
