@@ -301,17 +301,7 @@ window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
 
     if (error) throw error;
 
-    const tableBody = document.getElementById("beatTable");
-    
-    // Safety check: ensure your HTML container actually exists
-    if (!tableBody) {
-      console.error("Error: Could not find HTML element with id 'beatTable'");
-      return;
-    }
-    
-    tableBody.innerHTML = ""; 
-
-    const list = document.getElementById("beatList");
+   const list = document.getElementById("beatList");
 list.innerHTML = "";
 
 beats.forEach(beat => {
