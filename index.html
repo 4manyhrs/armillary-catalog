@@ -196,11 +196,12 @@
 }
 
 #appWrapper {
-  height: 100vh;
-  overflow-y: auto;          /* allow normal scrolling */
-  overscroll-behavior: none; /* stop bounce + pull-to-refresh */
-  touch-action: pan-y;       /* allow vertical scroll only */
+  min-height: 100vh;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
+  touch-action: pan-y;
 }
+
 
 
 </style>
