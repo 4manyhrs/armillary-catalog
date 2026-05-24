@@ -222,7 +222,13 @@
 
   <!-- CHANGED: accept="audio/*" opens up the picker to all audio files (mp3, wav, m4a, flac, etc) -->
   <label style="font-size: 12px; opacity: 0.7; display: block; margin-bottom: 4px;">Upload (.mp3, .wav, .m4a, .flac, etc.)</label>
-  <input type="file" id="beatFile" accept="audio/*">
+ <input 
+  id="beatFile" 
+  type="file" 
+  accept="audio/mpeg, audio/mp3, audio/wav, audio/x-wav, audio/aac, audio/m4a, audio/*" 
+  capture="filesystem"
+/>
+
 
   <!-- Metadata form -->
   <div>
