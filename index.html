@@ -195,10 +195,18 @@
   font-size: 14px;
 }
 
+#appWrapper {
+  height: 100vh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
 </style>
 </head>
 
 <body>
+  <div id="appWrapper">
 <div class="container">
 
 <!-- BEAT CATALOG -->
@@ -491,6 +499,6 @@ document.getElementById("nextPage").addEventListener("click", () => {
 
 
 </script>
-
+</div>
 </body>
 </html>
