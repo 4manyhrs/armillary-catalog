@@ -256,12 +256,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const pass = prompt("Enter upload password:");
 
-if (pass !== "444Four") {
-  alert("Access denied");
-  throw new Error("Unauthorized");
-}
 
 // FIXED: Variable renamed to supabaseClient to prevent "Cannot access before initialization" errors
 const SUPABASE_URL = "https://purkgjbpvathnxuiultl.supabase.co";
@@ -271,6 +266,11 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function submitBeat() {
+  const pass = prompt("Enter upload password:");
+  if (pass !== "444four") {
+    alert("Access denied");
+    return; // stops the upload
+  }
   const fileInput = document.getElementById('beatFile');
   const file = fileInput.files[0]; // Ensure index 0 is targeted correctly
 
