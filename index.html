@@ -378,6 +378,7 @@ window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
 
 </script>
   <script>
+  let currentAudio = null;
 function initCustomPlayers() {
   document.querySelectorAll(".audio-player").forEach(player => {
     const audio = new Audio(player.dataset.src);
@@ -391,14 +392,26 @@ function initCustomPlayers() {
     const forwardBtn = player.querySelector(".forward");
 
     playBtn.addEventListener("click", () => {
-      if (audio.paused) {
-        audio.play();
-        playBtn.textContent = "⏸";
-      } else {
-        audio.pause();
-        playBtn.textContent = "▶";
-      }
-    });
+
+  // 🔥 Stop previously playing audio
+  if (currentAudio && currentAudio !== audio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    if (currentPlayBtn) currentPlayBtn.textContent = "▶";
+  }
+
+  // 🔥 Toggle this audio
+  if (audio.paused) {
+    audio.play();
+    playBtn.textContent = "⏸";
+    currentAudio = audio;
+    currentPlayBtn = playBtn;
+  } else {
+    audio.pause();
+    playBtn.textContent = "▶";
+  }
+});
+
 
     audio.addEventListener("loadedmetadata", () => {
       durationEl.textContent = formatTime(audio.duration);
