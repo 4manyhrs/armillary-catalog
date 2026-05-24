@@ -197,10 +197,11 @@
 
 #appWrapper {
   height: 100vh;
-  overflow: hidden;
-  overscroll-behavior: none;
-  touch-action: none;
+  overflow-y: auto;          /* allow normal scrolling */
+  overscroll-behavior: none; /* stop bounce + pull-to-refresh */
+  touch-action: pan-y;       /* allow vertical scroll only */
 }
+
 
 </style>
 </head>
