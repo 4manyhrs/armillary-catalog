@@ -476,7 +476,8 @@ window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
 
  async function fetchAndDisplayBeats() {
   try {
-    const pageBeats = allBeats;
+    const start = (currentPage - 1) * beatsPerPage;
+    const end = start + beatsPerPage - 1;
     
     // 🔥 Server-side pagination
     const { data: beats, error, count } = await supabaseClient
@@ -648,15 +649,15 @@ function formatTime(sec) {
 document.getElementById("prevPage").addEventListener("click", () => {
   if (currentPage > 1) {
     currentPage--;
-    renderPage();
+    fetchAndDisplayBeats();
   }
 });
 
 document.getElementById("nextPage").addEventListener("click", () => {
-  const totalPages = Math.ceil(allBeats.length / beatsPerPage);
+  const totalPages = Math.ceil(totalBeats / beatsPerPage);
   if (currentPage < totalPages) {
     currentPage++;
-    renderPage();
+    fetchAndDisplayBeats();
   }
 });
 
