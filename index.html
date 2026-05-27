@@ -396,7 +396,8 @@ window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
   try {
     const start = (currentPage - 1) * beatsPerPage;
     const end = start + beatsPerPage - 1;
-
+    const pageBeats = allBeats;
+    
     // 🔥 Server-side pagination
     const { data: beats, error, count } = await supabaseClient
       .from('beats')
