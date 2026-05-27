@@ -392,22 +392,30 @@ function downloadNote() {
 // Automatically load the catalog when the page initializes
 window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
 
-  async function fetchAndDisplayBeats() {
+ async function fetchAndDisplayBeats() {
   try {
-    const { data: beats, error } = await supabaseClient
+    const start = (currentPage - 1) * beatsPerPage;
+    const end = start + beatsPerPage - 1;
+
+    // 🔥 Server-side pagination
+    const { data: beats, error, count } = await supabaseClient
       .from('beats')
-      .select('*');
-      .order('id', { ascending: false });
+      .select('*', { count: 'exact' })
+      .order('id', { ascending: false })
+      .range(start, end);
 
     if (error) throw error;
-    
-      allBeats = beats; // store all beats
-    renderPage();     // render the first page
+
+    allBeats = beats;      // only this page's beats
+    totalBeats = count;    // store total count for pagination UI
+
+    renderPage();
 
   } catch (err) {
     console.error("Error loading catalog:", err.message || err);
   }
 }
+
 
 </script>
   <script>
