@@ -493,25 +493,36 @@ const beatsPerPage = 7;
 let allBeats = [];
 let totalBeats = 0;
     
-    function applySorting() {
+   async function applySorting() {
   const mode = document.getElementById("sortSelect").value;
 
+  let ascending = false;
+  let column = "id";
+
   if (mode === "newest") {
-    allBeats.sort((a, b) => b.id - a.id);
+    column = "id";
+    ascending = false;
   }
   else if (mode === "oldest") {
-    allBeats.sort((a, b) => a.id - b.id);
+    column = "id";
+    ascending = true;
   }
   else if (mode === "az") {
-    allBeats.sort((a, b) => a.title.localeCompare(b.title));
+    column = "title";
+    ascending = true;
   }
   else if (mode === "za") {
-    allBeats.sort((a, b) => b.title.localeCompare(a.title));
+    column = "title";
+    ascending = false;
   }
 
+  currentSortColumn = column;
+  currentSortAscending = ascending;
+
   currentPage = 1;
-  renderPage();
+  fetchAndDisplayBeats();
 }
+
 
     function renderPage() {
   const list = document.getElementById("beatList");
