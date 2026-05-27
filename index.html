@@ -215,6 +215,13 @@
   <h2>Armillary Beat Catalog</h2>
   <p>Beats uploaded by producers will appear here automatically once we connect the dynamic loader.</p>
 
+  <select id="sortSelect" onchange="applySorting()">
+  <option value="newest">Newest First</option>
+  <option value="oldest">Oldest First</option>
+  <option value="az">Title A–Z</option>
+  <option value="za">Title Z–A</option>
+</select>
+  
 <div id="beatList" class="beat-list"></div>
   <div class="pagination">
   <button id="prevPage">Previous</button>
@@ -242,8 +249,33 @@
   <div>
     <input type="text" id="title" placeholder="Beat Title">
     <input type="text" id="artist" placeholder="Artist / Producer Name">
-    <input type="text" id="mood" placeholder="Mood (optional)">
-    <input type="text" id="genre" placeholder="Genre (optional)">
+   
+    <!-- 🔽 Mood dropdown -->
+<select id="mood">
+  <option value="">Mood (optional)</option>
+  <option value="Dark">Dark</option>
+  <option value="Chill">Chill</option>
+  <option value="Aggressive">Aggressive</option>
+  <option value="Emotional">Emotional</option>
+  <option value="Happy">Happy</option>
+  <option value="Sad">Sad</option>
+  <option value="Energetic">Energetic</option>
+</select>
+
+<!-- Genre dropdown -->
+<select id="genre">
+  <option value="">Genre (optional)</option>
+  <option value="Trap">Trap</option>
+  <option value="Boom Bap">Boom Bap</option>
+  <option value="R&B">R&B</option>
+  <option value="Drill">Drill</option>
+  <option value="Lo-Fi">Lo-Fi</option>
+  <option value="Pop">Pop</option>
+  <option value="EDM">EDM</option>
+  <option value="Hyper-Hop">Hyper-Hop</option>
+  <option value="Kingdom">Kingdom</option>
+</select>
+    
     <button onclick="submitBeat()">Submit Beat</button>
   </div>
 
@@ -365,6 +397,7 @@ window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
     const { data: beats, error } = await supabaseClient
       .from('beats')
       .select('*');
+      .order('id', { ascending: false });
 
     if (error) throw error;
     
@@ -449,6 +482,26 @@ function formatTime(sec) {
     let currentPage = 1;
 const beatsPerPage = 7;
 let allBeats = [];
+
+    function applySorting() {
+  const mode = document.getElementById("sortSelect").value;
+
+  if (mode === "newest") {
+    allBeats.sort((a, b) => b.id - a.id);
+  }
+  else if (mode === "oldest") {
+    allBeats.sort((a, b) => a.id - b.id);
+  }
+  else if (mode === "az") {
+    allBeats.sort((a, b) => a.title.localeCompare(b.title));
+  }
+  else if (mode === "za") {
+    allBeats.sort((a, b) => b.title.localeCompare(a.title));
+  }
+
+  currentPage = 1;
+  renderPage();
+}
 
     function renderPage() {
   const list = document.getElementById("beatList");
