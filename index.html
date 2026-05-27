@@ -202,6 +202,22 @@
   overscroll-behavior-y: none;
   touch-action: pan-y;
 }
+  
+/* Mobile-only scroll protection */
+@media (max-width: 768px) {
+  #appWrapper {
+    overscroll-behavior-y: none;
+    touch-action: pan-y;
+  }
+}
+
+/* Desktop should scroll normally */
+@media (min-width: 769px) {
+  #appWrapper {
+    overscroll-behavior-y: auto;
+    touch-action: auto;
+  }
+}
 
 </style>
 </head>
@@ -284,11 +300,28 @@
 
 <!-- NOTEPAD -->
 <div class="glass-box">
-  <h2>Session Notepad</h2>
-  <p>Rap Pad.</p>
-  <textarea id="noteArea" placeholder="Write notes here..."></textarea>
-  <br><br>
-  <button onclick="downloadNote()">Download Note</button>
+  <h2>Artists Notepad</h2>
+  <p>Write your lyrics here.</p>
+  
+  <select id="noteSlot" onchange="switchNoteSlot()">
+  <option value="1">Note 1</option>
+  <option value="2">Note 2</option>
+  <option value="3">Note 3</option>
+</select>
+<br><br>
+
+  <textarea id="noteArea" placeholder="No Garbage Allowed..."></textarea>
+<br><br>
+
+<!-- Desktop download -->
+<button onclick="downloadNote()">Download Note</button>
+
+<!-- Mobile share/save -->
+<button onclick="shareNote()">Share / Save Note</button>
+
+<!-- Clear notes -->
+<button onclick="clearNotes()">Clear Notes</button>
+
 </div>
 
 </div>
@@ -389,20 +422,67 @@ function downloadNote() {
   link.click();
 }
 
+let currentNoteSlot = "1";
+
+function switchNoteSlot() {
+  currentNoteSlot = document.getElementById("noteSlot").value;
+
+  const saved = localStorage.getItem("armillary_notes_" + currentNoteSlot);
+  document.getElementById("noteArea").value = saved || "";
+}
+
+// 🔥 Auto-save notes every second (per slot)
+setInterval(() => {
+  const text = document.getElementById("noteArea").value;
+  localStorage.setItem("armillary_notes_" + currentNoteSlot, text);
+}, 1000);
+
+async function shareNote() {
+  const text = document.getElementById("noteArea").value;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Armillary Notes",
+        text: text
+      });
+    } catch (err) {
+      console.error("Share canceled or failed:", err);
+    }
+  } else {
+    alert("Sharing not supported on this device.");
+  }
+}
+
+function clearNotes() {
+  if (confirm("Clear all notes? This cannot be undone.")) {
+    document.getElementById("noteArea").value = "";
+    localStorage.removeItem("armillary_notes_" + currentNoteSlot); // ✅ FIXED
+  }
+}
+
+// 🔥 Load Note 1 on startup
+window.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("armillary_notes_1");
+  if (saved) document.getElementById("noteArea").value = saved;
+});
+
+
+
+
+
 // Automatically load the catalog when the page initializes
 window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
 
  async function fetchAndDisplayBeats() {
   try {
-    const start = (currentPage - 1) * beatsPerPage;
-    const end = start + beatsPerPage - 1;
     const pageBeats = allBeats;
     
     // 🔥 Server-side pagination
     const { data: beats, error, count } = await supabaseClient
       .from('beats')
       .select('*', { count: 'exact' })
-      .order('id', { ascending: false })
+      .order(currentSortColumn, { ascending: currentSortAscending })
       .range(start, end);
 
     if (error) throw error;
@@ -489,35 +569,31 @@ function formatTime(sec) {
 }
 
     let currentPage = 1;
-const beatsPerPage = 7;
-let allBeats = [];
-let totalBeats = 0;
-    
+    const beatsPerPage = 7;
+    let allBeats = [];
+    let totalBeats = 0;
+    let currentSortColumn = "id";
+    let currentSortAscending = false;
+
    async function applySorting() {
   const mode = document.getElementById("sortSelect").value;
 
-  let ascending = false;
-  let column = "id";
-
   if (mode === "newest") {
-    column = "id";
-    ascending = false;
+    currentSortColumn = "id";
+    currentSortAscending = false;
   }
   else if (mode === "oldest") {
-    column = "id";
-    ascending = true;
+    currentSortColumn = "id";
+    currentSortAscending = true;
   }
   else if (mode === "az") {
-    column = "title";
-    ascending = true;
+    currentSortColumn = "title";
+    currentSortAscending = true;
   }
   else if (mode === "za") {
-    column = "title";
-    ascending = false;
+    currentSortColumn = "title";
+    currentSortAscending = false;
   }
-
-  currentSortColumn = column;
-  currentSortAscending = ascending;
 
   currentPage = 1;
   fetchAndDisplayBeats();
