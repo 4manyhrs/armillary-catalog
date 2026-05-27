@@ -490,7 +490,8 @@ function formatTime(sec) {
     let currentPage = 1;
 const beatsPerPage = 7;
 let allBeats = [];
-
+let totalBeats = 0;
+    
     function applySorting() {
   const mode = document.getElementById("sortSelect").value;
 
@@ -515,9 +516,7 @@ let allBeats = [];
   const list = document.getElementById("beatList");
   list.innerHTML = "";
 
-  const start = (currentPage - 1) * beatsPerPage;
-  const end = start + beatsPerPage;
-  const pageBeats = allBeats.slice(start, end);
+  const pageBeats = allBeats;
 
   pageBeats.forEach(beat => {
     const card = document.createElement("div");
@@ -548,7 +547,8 @@ let allBeats = [];
   updatePaginationUI();
 }
     function updatePaginationUI() {
-  const totalPages = Math.ceil(allBeats.length / beatsPerPage);
+  const totalPages = Math.ceil(totalBeats / beatsPerPage);
+
 
   document.getElementById("pageInfo").textContent =
     `Page ${currentPage} of ${totalPages}`;
