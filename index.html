@@ -940,17 +940,24 @@ document.getElementById("nextPage").addEventListener("click", () => {
 <script>
 let fvPlayers = {};
 let fvIndex = 0; // which card is center
+let readyCount = 0;
 
+// YOUTUBE API READY → CREATE PLAYERS
 function onYouTubeIframeAPIReady() {
   const cards = document.querySelectorAll(".video-card");
 
   cards.forEach((card, i) => {
     const vid = card.dataset.videoId;
-    const frameId = "fv-player-" + (i+1);
+    const frameId = "fv-player-" + (i + 1);
 
     fvPlayers[frameId] = new YT.Player(frameId, {
       videoId: vid,
-      playerVars: { autoplay: 1, mute: 1, controls: 1, playsinline: 1 },
+      playerVars: {
+        autoplay: 1,
+        mute: 1,
+        controls: 1,
+        playsinline: 1
+      },
       events: {
         onReady: checkAllReady
       }
@@ -958,28 +965,32 @@ function onYouTubeIframeAPIReady() {
   });
 }
 
-let readyCount = 0;
-
+// WHEN ALL PLAYERS ARE READY → START CAROUSEL
 function checkAllReady() {
   readyCount++;
 
   if (readyCount === document.querySelectorAll(".video-card").length) {
-    // All players ready → now we can start
-    updateFVPositions();          // Center card becomes active
-    fvPlayers["fv-player-1"].playVideo(); // Force first card to play
-    fvPlayers["fv-player-1"].mute();
 
-    // HIDE LOADER + SHOW CAROUSEL
+    // 1️⃣ Assign card positions FIRST
+    updateFVPositions();
+
+    // 2️⃣ NOW autoplay the center card (after updateFVPositions pauses others)
+    const first = fvPlayers["fv-player-1"];
+    first.mute();
+    first.playVideo();
+
+    // 3️⃣ Hide loader + show carousel
     document.getElementById("featured-loader").style.display = "none";
     document.querySelector(".video-3d-carousel").style.opacity = "1";
 
-    // Start rotation AFTER initial play
+    // 4️⃣ Start rotation AFTER autoplay is confirmed
     setTimeout(() => {
       setInterval(() => rotateFV(), 28000);
     }, 1000);
   }
 }
 
+// POSITION CARDS + CONTROL WHICH VIDEO PLAYS
 function updateFVPositions() {
   const cards = document.querySelectorAll(".video-card");
   cards.forEach(card => card.className = "video-card");
@@ -996,37 +1007,27 @@ function updateFVPositions() {
   cards[back].classList.add("back");
   cards[left].classList.add("left");
 
+  // Pause all except center
   Object.keys(fvPlayers).forEach((id, i) => {
     if (i === center) {
-      fvPlayers[id].playVideo();
       fvPlayers[id].mute();
+      fvPlayers[id].playVideo();
     } else {
       fvPlayers[id].pauseVideo();
     }
   });
 }
 
+// ROTATE CAROUSEL
 function rotateFV() {
   fvIndex++;
   updateFVPositions();
 }
 
+// BUTTON CONTROLS
 document.querySelector(".fv-left").addEventListener("click", () => {
-  fvIndex = (fvIndex - 1 + document.querySelectorAll(".video-card").length) % document.querySelectorAll(".video-card").length;
-  updateFVPositions();
-});
-
-document.querySelector(".fv-right").addEventListener("click", () => {
-  rotateFV();
-});
-
-document.querySelectorAll(".unmute-btn").forEach((btn, i) => {
-  btn.addEventListener("click", () => {
-    const player = fvPlayers["fv-player-" + (i+1)];
-    
-  });
-});
-
+  fvIndex = (fvIndex - 1 + document.querySelectorAll(".video-card").length) %
+            document.querySelectorAll(".video-card
 </script>
 
 <script>
