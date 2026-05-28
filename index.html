@@ -391,12 +391,12 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 42px;      /* slightly smaller circle */
-  height: 42px;
+  width: clamp(32px, 4vw, 42px);
+  height: clamp(32px, 4vw, 42px);
+  font-size: clamp(12px, 1.4vw, 16px) /*Arrow Size*/
   border-radius: 50%;
   background: rgba(0,0,0,0.55);
   color: #ff8c00;
-  font-size: 16px;  /* smaller arrow icon */
   font-weight: bold;
   display: flex;
   justify-content: center;
