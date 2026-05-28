@@ -266,11 +266,6 @@
   transform-origin: center;
 }
 
-.video-frame iframe {
-  pointer-events: auto;
-}
-
-
 
 /* CARD POSITIONS */
 .video-card.center {
@@ -974,6 +969,10 @@ function checkAllReady() {
     fvPlayers["fv-player-1"].playVideo(); // Force first card to play
     fvPlayers["fv-player-1"].mute();
 
+    // HIDE LOADER + SHOW CAROUSEL
+    document.getElementById("featured-loader").style.display = "none";
+    document.querySelector(".video-3d-carousel").style.opacity = "1";
+
     // Start rotation AFTER initial play
     setTimeout(() => {
       setInterval(() => rotateFV(), 28000);
@@ -1053,44 +1052,6 @@ fvContainer.addEventListener("touchend", e => {
   }
 });
 </script>
-
-
-
-<script>
-const loader = document.getElementById("featured-loader");
-const carousel = document.querySelector(".video-3d-carousel");
-const fvVideos = document.querySelectorAll(".video-card iframe");
-
-let fvLoaded = 0;
-
-// HIDE LOADER + SHOW CAROUSEL ONCE ALL PLAYERS ARE READY
-function checkPlayersReady() {
-  const total = Object.keys(fvPlayers).length;
-  let readyCount = 0;
-
-  Object.values(fvPlayers).forEach(player => {
-    if (player.getPlayerState) {
-      readyCount++;
-    }
-  });
-
-  if (readyCount === total) {
-    document.getElementById("featured-loader").style.display = "none";
-    document.querySelector(".video-3d-carousel").style.opacity = "1";
-  } else {
-    setTimeout(checkPlayersReady, 200);
-  }
-}
-
-// Start checking
-checkPlayersReady();
-
-
-</script>
-
-
-
-
 </div>
 </body>
 </html>
