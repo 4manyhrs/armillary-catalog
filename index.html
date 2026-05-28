@@ -1033,15 +1033,28 @@ const fvVideos = document.querySelectorAll(".video-card iframe");
 
 let fvLoaded = 0;
 
-fvVideos.forEach(v => {
-  v.addEventListener("load", () => {
-    fvLoaded++;
-    if (fvLoaded === fvVideos.length) {
-      loader.style.display = "none";
-      carousel.style.opacity = "1";
+// HIDE LOADER + SHOW CAROUSEL ONCE ALL PLAYERS ARE READY
+function checkPlayersReady() {
+  const total = Object.keys(fvPlayers).length;
+  let readyCount = 0;
+
+  Object.values(fvPlayers).forEach(player => {
+    if (player.getPlayerState) {
+      readyCount++;
     }
   });
-});
+
+  if (readyCount === total) {
+    document.getElementById("featured-loader").style.display = "none";
+    document.querySelector(".video-3d-carousel").style.opacity = "1";
+  } else {
+    setTimeout(checkPlayersReady, 200);
+  }
+}
+
+// Start checking
+checkPlayersReady();
+
 
 </script>
 
