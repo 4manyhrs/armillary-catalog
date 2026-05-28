@@ -228,6 +228,7 @@
   backdrop-filter: blur(12px);
   border-radius: 20px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  position:relative;
 }
 
 .featured-title {
@@ -243,13 +244,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  gap: 30px; /* more space between cards */
+  padding: 0 40px; /* more space from container edges */
 }
 
 /* VIDEO CARD BASE STYLE */
 .video-card {
   position: absolute;
-  width: 260px;
-  height: 420px;
+  width: 320px;
+  height: 440px;
   background: rgba(255,255,255,0.12);
   border-radius: 18px;
   padding: 12px;
@@ -258,6 +263,7 @@
   transition: transform 0.6s ease, opacity 0.6s ease;
   opacity: 0;
   pointer-events: none;
+  transform-origin: center;
 }
 
 /* CARD POSITIONS */
@@ -265,7 +271,7 @@
   z-index: 10;
   opacity: 1 !important;
   background: #000; /* prevents seeing through */
-  transform: scale(1.05); /* optional but looks great */
+  transform: scale(1.14); /* optional but looks great */
 }
 
 
@@ -328,8 +334,14 @@
 }
 
 #featured-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  background: rgba(0,0,0,0.85);
   width: 100%;
-  height: 260px;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -356,27 +368,6 @@
   margin: 0 20px;
 }
 
-.fv-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 22px;
-  color: #ff8c00;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.4);
-  z-index: 20;
-  user-select: none;
-}
-
-.fv-left {
-  left: 5px;
-}
-
-.fv-right {
-  right: 5px;
-}
 
 .fv-arrow:hover {
   background: rgba(255,140,0,0.3);
@@ -386,6 +377,28 @@
   position: relative;
 }
 
+.video-carousel-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.fv-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 26px;
+  color: #ff8c00;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.45);
+  z-index: 40;
+  user-select: none;
+}
+
+.fv-left { left: -10px; }
+.fv-right { right: -10px; }
+
 </style>
 </head>
 
@@ -393,7 +406,7 @@
   <div id="appWrapper">
 <div class="container">
 
-<div class="fv-arrow fv-left">&#10094;</div>
+
  <section id="featured-videos">
   <h2 class="featured-title">Featured Videos</h2>
 
@@ -401,9 +414,19 @@
   <div class="spinner"></div>
 </div>
 
+ <div class="video-carousel-wrapper">
+  
+  
+  <div class="fv-arrow fv-left">&#10094;</div>
+  
+  
+  
+  
+  
+  
+  
+  
   <div class="video-3d-carousel">
-    
-    
     
 <!--PUT FEATURED YOUTUBE VIDEOS HERE!!!-->
     <!-- CARD 1 -->
@@ -457,6 +480,21 @@
   </div>
 </section>
 <div class="fv-arrow fv-right">&#10095;</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <!-- BEAT CATALOG -->
 <div class="glass-box">
@@ -990,18 +1028,21 @@ fvContainer.addEventListener("touchend", e => {
 
 <script>
 const loader = document.getElementById("featured-loader");
-const videos = document.querySelectorAll(".video-card video");
+const carousel = document.querySelector(".video-3d-carousel");
+const fvVideos = document.querySelectorAll(".video-card iframe");
 
-let loadedCount = 0;
+let fvLoaded = 0;
 
-videos.forEach(v => {
-  v.addEventListener("loadedmetadata", () => {
-    loadedCount++;
-    if (loadedCount === videos.length) {
+fvVideos.forEach(v => {
+  v.addEventListener("load", () => {
+    fvLoaded++;
+    if (fvLoaded === fvVideos.length) {
       loader.style.display = "none";
+      carousel.style.opacity = "1";
     }
   });
 });
+
 </script>
 
 
