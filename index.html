@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <title>Armillary Beat Catalog</title>
 
+  <div id="dailyVerseBar">
+  <div id="dailyVerseScroll"></div>
+</div>
+
 <style>
   body {
     background: radial-gradient(circle at top left, #0D0D0F, #3A2F4F);
@@ -135,6 +139,34 @@
   opacity: 0.8;
 }
 
+/* Daily Verse*/
+  
+  #dailyVerseBar {
+  width: 100%;
+  overflow: hidden;
+  background: #1a1a1a;
+  border-bottom: 2px solid #ff7a00;
+  padding: 10px 0;
+  box-shadow: 0 0 20px rgba(255, 100, 0, 0.3);
+}
+
+#dailyVerseScroll {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 18px;
+  font-family: "Cinzel", serif; /* stone-carved vibe */
+  color: #ffb366;
+  text-shadow: 
+    0 0 6px #ff7a00,
+    0 0 12px #ff5500,
+    0 0 20px #ff3300;
+  animation: verseScroll 40s linear infinite;
+}
+
+@keyframes verseScroll {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
 
   /* Notepad */
   textarea {
@@ -953,7 +985,72 @@ document.getElementById("nextPage").addEventListener("click", () => {
   }
 });
 
+
 </script>
+
+
+<script> 
+const verseBooks = [
+  "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
+  "Joshua", "Judges", "Samuel I", "Samuel II", "Kings I", "Kings II",
+  "Isaiah", "Jeremiah", "Ezekiel",
+  "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah",
+  "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi",
+  "Psalms", "Proverbs"
+];
+
+// Fetch a random verse from Sefaria
+async function getRandomVerse() {
+  const book = verseBooks[Math.floor(Math.random() * verseBooks.length)];
+  const chapter = Math.floor(Math.random() * 10) + 1; // safe range
+  const verse = Math.floor(Math.random() * 10) + 1;
+
+  const ref = `${book}.${chapter}.${verse}`;
+  const url = `https://www.sefaria.org/api/texts/${ref}?lang=he`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  return {
+    ref,
+    hebrew: data.he || "",
+    english: data.text ? data.text[0] : ""
+  };
+}
+
+// Daily caching logic
+async function loadDailyVerse() {
+  const saved = JSON.parse(localStorage.getItem("dailyVerse"));
+  const now = new Date();
+  const hour = now.getHours();
+
+  if (saved && saved.date === now.toDateString() && hour < 6) {
+    displayVerse(saved);
+    return;
+  }
+
+  const verse = await getRandomVerse();
+  const store = { ...verse, date: now.toDateString() };
+
+  localStorage.setItem("dailyVerse", JSON.stringify(store));
+  displayVerse(store);
+}
+
+// Display in scroll bar
+function displayVerse(v) {
+  const scroll = document.getElementById("dailyVerseScroll");
+
+  scroll.textContent =
+    `${v.ref} │ "${v.english}"     ${v.ref} │ "${v.english}"     `;
+}
+
+loadDailyVerse();
+
+</script>
+
+
+
+  
     <!-- FEATURED VIDEOS 3D CAROUSEL JS -->
 <script src="https://www.youtube.com/iframe_api"></script>
 
