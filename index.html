@@ -219,12 +219,138 @@
   }
 }
 
+  #featured-videos {
+  margin: 60px auto;
+  padding: 30px;
+  width: 100%;
+  max-width: 1200px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+.featured-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.video-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 20px;
+  padding-bottom: 20px;
+}
+
+.featured-video-card {
+  min-width: 75%;
+  max-width: 75%;
+  scroll-snap-align: center;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  padding: 15px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  opacity: 0.7;
+  transform: scale(0.75);
+}
+
+.featured-video-card.active {
+  transform: scale(1);
+  opacity: 1;
+  z-index: 5;
+}
+
+.video-wrapper {
+  width: 100%;
+  height: 220px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: black;
+}
+
+.video-artist {
+  margin-top: 12px;
+  font-size: 1.3rem;
+}
+
+.video-description {
+  margin-top: 6px;
+  opacity: 0.85;
+}
+
+.video-link {
+  margin-top: 8px;
+  display: inline-block;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+
 </style>
 </head>
 
 <body>
   <div id="appWrapper">
 <div class="container">
+
+  <section id="featured-videos">
+  <h2 class="featured-title">Featured Videos</h2>
+
+  <div class="video-carousel">
+    
+    <!-- CARD 1 -->
+    <div class="featured-video-card" data-video-id="YOUTUBE_VIDEO_ID_1">
+      <div class="video-wrapper" id="player-1"></div>
+
+      <h3 class="video-artist">Artist Name 1</h3>
+      <p class="video-description">Short custom description for this video.</p>
+
+      <a class="video-link" href="https://youtube.com/watch?v=YOUTUBE_VIDEO_ID_1" target="_blank">
+        <em>Go to Page</em>
+      </a>
+    </div>
+
+    <!-- CARD 2 -->
+    <div class="featured-video-card" data-video-id="YOUTUBE_VIDEO_ID_2">
+      <div class="video-wrapper" id="player-2"></div>
+
+      <h3 class="video-artist">Artist Name 2</h3>
+      <p class="video-description">Short custom description for this video.</p>
+
+      <a class="video-link" href="https://youtube.com/watch?v=YOUTUBE_VIDEO_ID_2" target="_blank">
+        <em>Go to Page</em>
+      </a>
+    </div>
+
+    <!-- CARD 3 -->
+    <div class="featured-video-card" data-video-id="YOUTUBE_VIDEO_ID_3">
+      <div class="video-wrapper" id="player-3"></div>
+
+      <h3 class="video-artist">Artist Name 3</h3>
+      <p class="video-description">Short custom description for this video.</p>
+
+      <a class="video-link" href="https://youtube.com/watch?v=YOUTUBE_VIDEO_ID_3" target="_blank">
+        <em>Go to Page</em>
+      </a>
+    </div>
+
+    <!-- CARD 4 -->
+    <div class="featured-video-card" data-video-id="YOUTUBE_VIDEO_ID_4">
+      <div class="video-wrapper" id="player-4"></div>
+
+      <h3 class="video-artist">Artist Name 4</h3>
+      <p class="video-description">Short custom description for this video.</p>
+
+      <a class="video-link" href="https://youtube.com/watch?v=YOUTUBE_VIDEO_ID_4" target="_blank">
+        <em>Go to Page</em>
+      </a>
+    </div>
+
+  </div>
+</section>
 
 <!-- BEAT CATALOG -->
 <div class="glass-box">
@@ -661,8 +787,71 @@ document.getElementById("nextPage").addEventListener("click", () => {
   }
 });
 
-
 </script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+<script>
+let players = {};
+
+function onYouTubeIframeAPIReady() {
+  document.querySelectorAll('.featured-video-card').forEach((card, index) => {
+    const videoId = card.dataset.videoId;
+    const playerId = `player-${index+1}`;
+
+    players[playerId] = new YT.Player(playerId, {
+      videoId: videoId,
+      playerVars: {
+        autoplay: 0,
+        mute: 1,
+        controls: 1,
+        playsinline: 1
+      }
+    });
+  });
+}
+
+const cards = document.querySelectorAll('.featured-video-card');
+
+function updateActiveCard() {
+  let centerX = window.innerWidth / 2;
+
+  let closestCard = null;
+  let closestDistance = Infinity;
+
+  cards.forEach(card => {
+    const rect = card.getBoundingClientRect();
+    const cardCenter = rect.left + rect.width / 2;
+    const distance = Math.abs(centerX - cardCenter);
+
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestCard = card;
+    }
+  });
+
+  cards.forEach(card => card.classList.remove('active'));
+  closestCard.classList.add('active');
+
+  Object.keys(players).forEach((id, i) => {
+    if (cards[i] === closestCard) {
+      players[id].playVideo();
+      players[id].mute();
+    } else {
+      players[id].pauseVideo();
+    }
+  });
+}
+
+document.querySelector('.video-carousel').addEventListener('scroll', () => {
+  clearTimeout(window.snapTimeout);
+  window.snapTimeout = setTimeout(updateActiveCard, 150);
+});
+
+window.addEventListener('load', () => {
+  setTimeout(updateActiveCard, 500);
+});
+</script>
+
 </div>
 </body>
 </html>
