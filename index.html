@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <title>Armillary Beat Catalog</title>
 
+  <button id="toggleNamesBtn" class="kingdom-toggle-btn">
+  ♚
+</button>
+
   <div id="dailyVerseBar">
   <div id="dailyVerseScroll"></div>
 </div>
@@ -174,6 +178,22 @@
 @keyframes verseScroll {
   from { transform: translateX(100%); }
   to { transform: translateX(-100%); }
+}
+/*TOGGLE KINGDOM MODE*/
+  .kingdom-toggle-btn {
+  background: #ff7a00;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 10px 0;
+  transition: 0.2s ease;
+}
+
+.kingdom-toggle-btn:hover {
+  background: #ff9a33;
 }
 
   /*Verse Pop-up*/
@@ -1091,12 +1111,15 @@ function displayVerses(list) {
   let combined = "";
 
   list.forEach(v => {
-    combined += `${v.ref} │ "${v.english}"     `;
+    let text = v.english;
+    if (useKingdomNames) text = applyKingdomNames(text);
+
+    combined += `${v.ref} │ "${text}"     `;
   });
 
-  // Duplicate for infinite scroll
   scroll.textContent = combined + combined;
 }
+
 
 
   // Make 3 verse bars clickable
@@ -1130,7 +1153,11 @@ document.getElementById("closeVerseModal").addEventListener("click", () => {
   if (!saved) return;
 
   const modalText = saved.verses
-    .map(v => `${v.ref}\n"${v.english}"\n`)
+    .map(v => {
+      let text = v.english;
+      if (useKingdomNames) text = applyKingdomNames(text);
+      return `${v.ref}\n"${text}"\n`;
+    })
     .join("\n");
 
   document.getElementById("verseModalRef").textContent = "Today's Verses";
@@ -1139,6 +1166,9 @@ document.getElementById("closeVerseModal").addEventListener("click", () => {
 
   document.getElementById("verseModal").style.display = "flex";
 });
+
+
+
 
   function cleanText(str) {
   if (!str) return "";
@@ -1151,6 +1181,26 @@ document.getElementById("closeVerseModal").addEventListener("click", () => {
 document.getElementById("dailyVerseScroll").textContent =
   "Loading daily scriptures…";
 
+
+function applyKingdomNames(text) {
+  return text
+    .replace(/\bThe LORD\b/g, "YHWH")
+    .replace(/\bLORD\b/g, "YHWH")
+    .replace(/\bLord\b/g, "Adonai")
+    .replace(/\bMy Lord\b/g, "Adonai")
+    .replace(/\bGod\b/g, "Elohim");
+}
+
+  let useKingdomNames = false;
+
+document.getElementById("toggleNamesBtn").addEventListener("click", () => {
+  useKingdomNames = !useKingdomNames;
+
+  const saved = JSON.parse(localStorage.getItem("dailyVerses"));
+  if (saved) displayVerses(saved.verses);
+});
+
+  
 loadDailyVerses();
   
 </script>
