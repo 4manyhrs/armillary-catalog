@@ -1024,16 +1024,25 @@ function rotateFV() {
   updateFVPositions();
 }
 
-// BUTTON CONTROLS
+
+// LEFT ARROW
 document.querySelector(".fv-left").addEventListener("click", () => {
-  fvIndex = (fvIndex - 1 + document.querySelectorAll(".video-card").length) %
-            document.querySelectorAll(".video-card
+  const total = document.querySelectorAll(".video-card").length;
+  fvIndex = (fvIndex - 1 + total) % total;
+  updateFVPositions();
+});
+
+// RIGHT ARROW
+document.querySelector(".fv-right").addEventListener("click", () => {
+  rotateFV();
+});
+
 </script>
 
 <script>
 let startX = 0;
 
-const fvContainer = document.querySelector(".featured-videos-container");
+const fvContainer = document.querySelector(".video-carousel-wrapper");
 
 fvContainer.addEventListener("touchstart", e => {
   startX = e.touches[0].clientX;
@@ -1044,14 +1053,19 @@ fvContainer.addEventListener("touchend", e => {
   const diff = startX - endX;
 
   if (Math.abs(diff) > 50) {
+    const total = document.querySelectorAll(".video-card").length;
+
     if (diff > 0) {
-      rotateFV(); // swipe left → next video
+      // swipe left → next
+      rotateFV();
     } else {
-      fvIndex = (fvIndex - 1 + document.querySelectorAll(".video-card").length) % document.querySelectorAll(".video-card").length;
-      updateFVPositions(); // swipe right → previous video
+      // swipe right → previous
+      fvIndex = (fvIndex - 1 + total) % total;
+      updateFVPositions();
     }
   }
 });
+
 </script>
 </div>
 </body>
