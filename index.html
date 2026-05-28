@@ -1030,7 +1030,7 @@ document.getElementById("nextPage").addEventListener("click", () => {
 
 /* ADDING BIBLE VERSES HERE */
 <script> 
-const verseBooks = [
+const allBooks = [
   "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
   "Joshua", "Judges", "Samuel I", "Samuel II", "Kings I", "Kings II",
   "Isaiah", "Jeremiah", "Ezekiel",
@@ -1123,11 +1123,8 @@ document.getElementById("dailyVerseBar").addEventListener("click", () => {
     .trim();
 }
 
-  scroll.textContent =
-  `${v.ref} │ "${cleanText(v.english)}"     ` +
-  `${v.ref} │ "${cleanText(v.english)}"     `;
 
-
+loadDailyVerses();
 </script>
 
 
