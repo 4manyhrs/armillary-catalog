@@ -1081,7 +1081,7 @@ setInterval(() => {
 let bible = {}; // global Bible object
 
 async function loadKJV() {
-  const res = await fetch('/data/KJV.txt');
+  const res = await fetch('/armillary-catalog/KJV.txt');
   const text = await res.text();
 
   const bibleObj = {};
