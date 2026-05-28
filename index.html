@@ -657,6 +657,8 @@ window.addEventListener('DOMContentLoaded', fetchAndDisplayBeats);
 </script>
   <script>
   let currentAudio = null;
+    let currentPlayBtn = null;
+
 function initCustomPlayers() {
   document.querySelectorAll(".audio-player").forEach(player => {
     const audio = new Audio(player.dataset.src);
