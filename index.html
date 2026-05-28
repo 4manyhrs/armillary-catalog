@@ -262,7 +262,7 @@
   box-shadow: 0 6px 20px rgba(0,0,0,0.25);
   transition: transform 0.6s ease, opacity 0.6s ease;
   opacity: 0;
-  pointer-events: none;
+  pointer-events: auto;
   transform-origin: center;
 }
 
@@ -947,20 +947,38 @@ let fvPlayers = {};
 let fvIndex = 0; // which card is center
 
 function onYouTubeIframeAPIReady() {
-  document.querySelectorAll(".video-card").forEach((card, i) => {
+  const cards = document.querySelectorAll(".video-card");
+
+  cards.forEach((card, i) => {
     const vid = card.dataset.videoId;
     const frameId = "fv-player-" + (i+1);
 
     fvPlayers[frameId] = new YT.Player(frameId, {
       videoId: vid,
-      playerVars: { autoplay: 0, mute: 1, controls: 1, playsinline: 1 }
+      playerVars: { autoplay: 0, mute: 1, controls: 1, playsinline: 1 },
+      events: {
+        onReady: checkAllReady
+      }
     });
   });
+}
 
-  setTimeout(() => updateFVPositions(), 500);
-  // Force first card to be center on load
-document.querySelector(".video-card").classList.add("center");
-  setInterval(() => rotateFV(), 24000);
+let readyCount = 0;
+
+function checkAllReady() {
+  readyCount++;
+
+  if (readyCount === document.querySelectorAll(".video-card").length) {
+    // All players ready → now we can start
+    updateFVPositions();          // Center card becomes active
+    fvPlayers["fv-player-1"].playVideo(); // Force first card to play
+    fvPlayers["fv-player-1"].mute();
+
+    // Start rotation AFTER initial play
+    setTimeout(() => {
+      setInterval(() => rotateFV(), 28000);
+    }, 1000);
+  }
 }
 
 function updateFVPositions() {
