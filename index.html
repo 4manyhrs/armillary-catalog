@@ -1039,10 +1039,13 @@ const verseBooks = [
   "Psalms", "Proverbs"
 ];
 
+  const psalmsOnly = ["Psalms"];
+const proverbsOnly = ["Proverbs"];
+
 // Fetch a random verse from Sefaria
-async function getRandomVerse() {
-  const book = verseBooks[Math.floor(Math.random() * verseBooks.length)];
-  const chapter = Math.floor(Math.random() * 10) + 1; // safe range
+async function getRandomFromBooks(bookList) {
+  const book = bookList[Math.floor(Math.random() * bookList.length)];
+  const chapter = Math.floor(Math.random() * 10) + 1;
   const verse = Math.floor(Math.random() * 10) + 1;
 
   const ref = `${book}.${chapter}.${verse}`;
@@ -1053,54 +1056,77 @@ async function getRandomVerse() {
 
   return {
     ref,
-    hebrew: data.he || "",
-    english: data.text ? data.text[0] : ""
+    english: cleanText(data.text ? data.text[0] : "")
   };
 }
 
+
 // Daily caching logic
-async function loadDailyVerse() {
-  const saved = JSON.parse(localStorage.getItem("dailyVerse"));
+async function loadDailyVerses() {
+  const saved = JSON.parse(localStorage.getItem("dailyVerses"));
   const now = new Date();
   const hour = now.getHours();
 
   if (saved && saved.date === now.toDateString() && hour < 6) {
-    displayVerse(saved);
+    displayVerses(saved.verses);
     return;
   }
 
-  const verse = await getRandomVerse();
-  const store = { ...verse, date: now.toDateString() };
+  const verses = [
+    await getRandomFromBooks(allBooks),
+    await getRandomFromBooks(psalmsOnly),
+    await getRandomFromBooks(proverbsOnly)
+  ];
 
-  localStorage.setItem("dailyVerse", JSON.stringify(store));
-  displayVerse(store);
+  const store = { date: now.toDateString(), verses };
+  localStorage.setItem("dailyVerses", JSON.stringify(store));
+
+  displayVerses(verses);
 }
 
 // Display in scroll bar
-function displayVerse(v) {
+function displayVerses(list) {
   const scroll = document.getElementById("dailyVerseScroll");
 
-  scroll.textContent =
-    `${v.ref} │ "${v.english}"     ${v.ref} │ "${v.english}"     `;
+  let combined = "";
+
+  list.forEach(v => {
+    combined += `${v.ref} │ "${v.english}"     `;
+  });
+
+  // Duplicate for infinite scroll
+  scroll.textContent = combined + combined;
 }
 
-loadDailyVerse();
 
-  // Make verse bar clickable
+  // Make 3 verse bars clickable
 document.getElementById("dailyVerseBar").addEventListener("click", () => {
-  const saved = JSON.parse(localStorage.getItem("dailyVerse"));
+  const saved = JSON.parse(localStorage.getItem("dailyVerses"));
   if (!saved) return;
 
-  document.getElementById("verseModalRef").textContent = saved.ref;
-  document.getElementById("verseModalText").textContent = saved.english;
+  const modalText = saved.verses
+    .map(v => `${v.ref}\n"${v.english}"\n`)
+    .join("\n");
+
+  document.getElementById("verseModalRef").textContent = "Today's Verses";
+  document.getElementById("verseModalText").textContent = modalText;
 
   document.getElementById("verseModal").style.display = "flex";
 });
 
-// Close modal
-document.getElementById("closeVerseModal").addEventListener("click", () => {
-  document.getElementById("verseModal").style.display = "none";
-});
+
+  function cleanText(str) {
+  if (!str) return "";
+  return str
+    .replace(/<[^>]*>/g, "")   // remove HTML tags
+    .replace(/\s+/g, " ")      // normalize spaces
+    .trim();
+}
+
+  scroll.textContent =
+  `${v.ref} │ "${cleanText(v.english)}"     ` +
+  `${v.ref} │ "${cleanText(v.english)}"     `;
+
 
 </script>
 
