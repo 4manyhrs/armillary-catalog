@@ -1114,12 +1114,18 @@ const proverbsOnly = ["Proverbs"];
 
 // Fetch a random verse from text list
 function getRandomFromBooks(bookList) {
+  if (!bookList || bookList.length === 0) return null;
+
   const book = bookList[Math.floor(Math.random() * bookList.length)];
 
-  const chapters = Object.keys(bible[book]);
+  const chapters = Object.keys(bible[book] || {});
+  if (chapters.length === 0) return null;
+
   const chapter = chapters[Math.floor(Math.random() * chapters.length)];
 
-  const verses = Object.keys(bible[book][chapter]);
+  const verses = Object.keys(bible[book][chapter] || {});
+  if (verses.length === 0) return null;
+
   const verse = verses[Math.floor(Math.random() * verses.length)];
 
   return {
@@ -1127,6 +1133,7 @@ function getRandomFromBooks(bookList) {
     english: bible[book][chapter][verse]
   };
 }
+
 
 
 
@@ -1141,11 +1148,12 @@ async function loadDailyVerses() {
     return;
   }
 
-  const verses = [
-    await getRandomFromBooks(allBooks),
-    await getRandomFromBooks(psalmsOnly),
-    await getRandomFromBooks(proverbsOnly)
-  ];
+ const verses = [
+  getRandomFromBooks(allBooks),
+  getRandomFromBooks(psalmsOnly),
+  getRandomFromBooks(proverbsOnly)
+];
+
 
   const store = { date: now.toDateString(), verses };
   localStorage.setItem("dailyVerses", JSON.stringify(store));
@@ -1262,8 +1270,13 @@ document.getElementById("toggleNamesBtn").addEventListener("click", () => {
 
 async function initBible() {
   bible = await loadKJV();
+
+  // Build book list dynamically
+  window.allBooks = Object.keys(bible);
+
   loadDailyVerses();
 }
+
 
 initBible();
 
