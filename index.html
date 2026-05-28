@@ -403,6 +403,21 @@
 .fv-left { left: 5px; }
 .fv-right { right: 5px; }
 
+.unmute-btn {
+  margin-top: 8px;
+  background: #ff8c00;
+  color: #000;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.unmute-btn:hover {
+  background: #ffa53c;
+}
+
 </style>
 </head>
 
@@ -438,8 +453,8 @@
 
       <h3 class="video-artist">ATCtharapper x 2ha8az</h3>
       <p class="video-description">Dynamic Duo Based in Waynesboro, GA. Set to takeover the industry with Christ-Led Cadences. Click Below to show support and join the movement!</p>
-
-      <a href="https://youtube.com/shorts/6H-q_3Jw_lY" target="_blank" class="go-btn">
+      <button class="unmute-btn">🔊 Unmute</button>
+      <a href="https://youtube.com/@twangodschild" target="_blank" class="go-btn">
         Go to Page
       </a>
     </div>
@@ -450,8 +465,8 @@
 
       <h3 class="video-artist">YvngKarri</h3>
       <p class="video-description">Hometown Legend known for his hard-hardhitting and heart-felt classics all based true stories and authenticity. Karri never fails to remind the crowd of the various street struggles that exists and the mindset needed to overcome! Help break barrier by following YvngKarri in the link below!</p>
-
-      <a href="https://youtu.be/AnwrLmVLTFc" target="_blank" class="go-btn">
+      <button class="unmute-btn">🔊 Unmute</button>
+      <a href="https://youtube.com/@yvngkarriofficial" target="_blank" class="go-btn">
         Go to Page
       </a>
     </div>
@@ -462,7 +477,7 @@
 
       <h3 class="video-artist">Artist Name 3</h3>
       <p class="video-description">Short custom description here.</p>
-
+      <button class="unmute-btn">🔊 Unmute</button>
       <a href="https://www.youtube.com/watch?v=D0UnqGm_miA" target="_blank" class="go-btn">
         Go to Page
       </a>
@@ -474,7 +489,7 @@
 
       <h3 class="video-artist">Artist Name 4</h3>
       <p class="video-description">Short custom description here.</p>
-
+      <button class="unmute-btn">🔊 Unmute</button>
       <a href="https://www.youtube.com/watch?v=D0UnqGm_miA" target="_blank" class="go-btn">
         Go to Page
       </a>
@@ -998,6 +1013,14 @@ document.querySelector(".fv-left").addEventListener("click", () => {
 
 document.querySelector(".fv-right").addEventListener("click", () => {
   rotateFV();
+});
+
+document.querySelectorAll(".unmute-btn").forEach((btn, i) => {
+  btn.addEventListener("click", () => {
+    const player = fvPlayers["fv-player-" + (i+1)];
+    player.unMute();
+    player.setVolume(100);
+  });
 });
 
 </script>
