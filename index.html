@@ -7,6 +7,13 @@
   <div id="dailyVerseBar">
   <div id="dailyVerseScroll"></div>
 </div>
+<div id="verseModal">
+  <div id="verseModalContent">
+    <span id="closeVerseModal">&times;</span>
+    <h3 id="verseModalRef"></h3>
+    <p id="verseModalText"></p>
+  </div>
+</div>
 
 <style>
   body {
@@ -141,14 +148,15 @@
 
 /* Daily Verse*/
   
-  #dailyVerseBar {
+#dailyVerseBar {
   width: 100%;
   overflow: hidden;
-  background: #1a1a1a;
-  border-bottom: 2px solid #ff7a00;
-  padding: 10px 0;
-  box-shadow: 0 0 20px rgba(255, 100, 0, 0.3);
+  background: #0d0d0f; /* matches your site’s dark theme */
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 140, 0, 0.25); /* subtle, not glowing */
+  box-shadow: none; /* removes vignette */
 }
+
 
 #dailyVerseScroll {
   display: inline-block;
@@ -160,13 +168,45 @@
     0 0 6px #ff7a00,
     0 0 12px #ff5500,
     0 0 20px #ff3300;
-  animation: verseScroll 40s linear infinite;
+  animation: verseScroll 140s linear infinite;
 }
 
 @keyframes verseScroll {
   from { transform: translateX(100%); }
   to { transform: translateX(-100%); }
 }
+
+  /*Verse Pop-up*/
+  #verseModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.75);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#verseModalContent {
+  background: #1a1a1a;
+  padding: 20px 30px;
+  border-radius: 12px;
+  max-width: 600px;
+  color: #ffb366;
+  text-shadow: 0 0 6px #ff7a00;
+  border: 1px solid rgba(255,140,0,0.3);
+}
+
+#closeVerseModal {
+  float: right;
+  cursor: pointer;
+  font-size: 24px;
+  color: #ff7a00;
+}
+
 
   /* Notepad */
   textarea {
@@ -988,7 +1028,7 @@ document.getElementById("nextPage").addEventListener("click", () => {
 
 </script>
 
-
+/* ADDING BIBLE VERSES HERE */
 <script> 
 const verseBooks = [
   "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
@@ -1045,6 +1085,22 @@ function displayVerse(v) {
 }
 
 loadDailyVerse();
+
+  // Make verse bar clickable
+document.getElementById("dailyVerseBar").addEventListener("click", () => {
+  const saved = JSON.parse(localStorage.getItem("dailyVerse"));
+  if (!saved) return;
+
+  document.getElementById("verseModalRef").textContent = saved.ref;
+  document.getElementById("verseModalText").textContent = saved.english;
+
+  document.getElementById("verseModal").style.display = "flex";
+});
+
+// Close modal
+document.getElementById("closeVerseModal").addEventListener("click", () => {
+  document.getElementById("verseModal").style.display = "none";
+});
 
 </script>
 
