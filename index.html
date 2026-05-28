@@ -271,25 +271,25 @@
 .video-card.center {
   z-index: 10;
   opacity: 1 !important;
-  background: #000; /* prevents seeing through */
+  background: #3A2F4F; /* prevents seeing through */
   transform: scale(1.14); /* optional but looks great */
 }
 
 
 .video-card.right {
-  transform: translateX(180px) scale(0.75);
+  transform: translateX(220px) scale(0.75);
   opacity: 0.6;
   z-index: 3;
 }
 
 .video-card.left {
-  transform: translateX(-180px) scale(0.75);
+  transform: translateX(-220px) scale(0.75);
   opacity: 0.6;
   z-index: 3;
 }
 
 .video-card.back {
-  transform: translateY(-20px) scale(0.5);
+  transform: translateY(-20px) translateX(-44) scale(0.5);
   opacity: 0.3;
   z-index: 1;
 }
@@ -387,22 +387,38 @@
   width: 100%;
 }
 
+/* PERFECT CIRCULAR ARROWS */
 .fv-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 26px;
-  color: #ff8c00;
-  cursor: pointer;
-  padding: 6px 10px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: rgba(0,0,0,0.45);
-  z-index: 40;
+  background: rgba(0,0,0,0.55);
+  color: #ff8c00;
+  font-size: 22px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
   user-select: none;
+  z-index: 50;
+  transition: background 0.2s ease, transform 0.2s ease;
+  border: 2px solid rgba(255,140,0,0.4);
 }
 
-.fv-left { left: 5px; }
-.fv-right { right: 5px; }
+/* HOVER EFFECT */
+.fv-arrow:hover {
+  background: rgba(255,140,0,0.25);
+  transform: translateY(-50%) scale(1.08);
+}
+
+/* LEFT & RIGHT POSITIONS */
+.fv-left { left: -60px; }
+.fv-right { right: -60px; }
+
 
 
 </style>
