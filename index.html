@@ -1109,11 +1109,36 @@ document.getElementById("dailyVerseBar").addEventListener("click", () => {
     .join("\n");
 
   document.getElementById("verseModalRef").textContent = "Today's Verses";
-  document.getElementById("verseModalText").textContent = modalText;
+  document.getElementById("verseModalText").innerHTML =
+  modalText.replace(/\n/g, "<br>");
+
+document.getElementById("verseModal").addEventListener("click", () => {
+  document.getElementById("verseModal").style.display = "none";
+});
+document.getElementById("verseModalContent").addEventListener("click", (e) => {
+  e.stopPropagation();
+});
+
+ // X button still works
+document.getElementById("closeVerseModal").addEventListener("click", () => {
+  document.getElementById("verseModal").style.display = "none";
+});
+});
+
+  document.getElementById("dailyVerseBar").addEventListener("click", () => {
+  const saved = JSON.parse(localStorage.getItem("dailyVerses"));
+  if (!saved) return;
+
+  const modalText = saved.verses
+    .map(v => `${v.ref}\n"${v.english}"\n`)
+    .join("\n");
+
+  document.getElementById("verseModalRef").textContent = "Today's Verses";
+  document.getElementById("verseModalText").innerHTML =
+    modalText.replace(/\n/g, "<br>");
 
   document.getElementById("verseModal").style.display = "flex";
 });
-
 
   function cleanText(str) {
   if (!str) return "";
@@ -1123,8 +1148,11 @@ document.getElementById("dailyVerseBar").addEventListener("click", () => {
     .trim();
 }
 
+document.getElementById("dailyVerseScroll").textContent =
+  "Loading daily scriptures…";
 
 loadDailyVerses();
+  
 </script>
 
 
