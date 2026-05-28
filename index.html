@@ -219,75 +219,103 @@
   }
 }
 
-  #featured-videos {
+ /* FEATURED VIDEOS SECTION WRAPPER */
+#featured-videos {
   margin: 60px auto;
   padding: 30px;
-  width: 100%;
   max-width: 1200px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255,255,255,0.08);
   backdrop-filter: blur(12px);
   border-radius: 20px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.25);
 }
 
 .featured-title {
-  font-size: 2rem;
-  margin-bottom: 20px;
   text-align: center;
+  font-size: 2rem;
+  margin-bottom: 25px;
 }
 
-.video-carousel {
+/* 3D CAROUSEL CONTAINER */
+.video-3d-carousel {
+  position: relative;
+  height: 450px;
   display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  gap: 20px;
-  padding-bottom: 20px;
+  justify-content: center;
+  align-items: center;
 }
 
-.featured-video-card {
-  min-width: 75%;
-  max-width: 75%;
-  scroll-snap-align: center;
-  background: rgba(255, 255, 255, 0.12);
+/* VIDEO CARD BASE STYLE */
+.video-card {
+  position: absolute;
+  width: 260px;
+  height: 420px;
+  background: rgba(255,255,255,0.12);
   border-radius: 18px;
-  padding: 15px;
+  padding: 12px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-  transition: transform 0.35s ease, opacity 0.35s ease;
-  opacity: 0.7;
-  transform: scale(0.75);
+  transition: transform 0.6s ease, opacity 0.6s ease;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.featured-video-card.active {
-  transform: scale(1);
+/* CARD POSITIONS */
+.video-card.center {
+  transform: translateX(0) scale(1);
   opacity: 1;
   z-index: 5;
+  pointer-events: auto;
 }
 
-.video-wrapper {
+.video-card.right {
+  transform: translateX(180px) scale(0.75);
+  opacity: 0.6;
+  z-index: 3;
+}
+
+.video-card.left {
+  transform: translateX(-180px) scale(0.75);
+  opacity: 0.6;
+  z-index: 3;
+}
+
+.video-card.back {
+  transform: translateY(-20px) scale(0.5);
+  opacity: 0.3;
+  z-index: 1;
+}
+
+/* VIDEO FRAME */
+.video-frame {
   width: 100%;
-  height: 220px;
+  height: 200px;
+  background: black;
   border-radius: 12px;
   overflow: hidden;
-  background: black;
 }
 
+/* TEXT */
 .video-artist {
-  margin-top: 12px;
-  font-size: 1.3rem;
+  margin-top: 10px;
+  font-size: 1.2rem;
 }
 
 .video-description {
-  margin-top: 6px;
   opacity: 0.85;
+  margin-top: 6px;
 }
 
-.video-link {
-  margin-top: 8px;
+/* ORANGE BUTTON */
+.go-btn {
   display: inline-block;
-  font-size: 0.9rem;
-  opacity: 0.9;
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: #ff7a00;
+  color: white;
+  border-radius: 8px;
+  font-style: italic;
+  text-decoration: none;
 }
-
 
 </style>
 </head>
@@ -296,61 +324,62 @@
   <div id="appWrapper">
 <div class="container">
 
-  <section id="featured-videos">
+ <section id="featured-videos">
   <h2 class="featured-title">Featured Videos</h2>
 
-  <div class="video-carousel">
-    
+  <div class="video-3d-carousel">
+
     <!-- CARD 1 -->
-    <div class="featured-video-card" data-video-id="YOUTUBE_VIDEO_ID_1">
-      <div class="video-wrapper" id="player-1"></div>
+    <div class="video-card" data-video-id="YOUTUBE_VIDEO_ID_1">
+      <div class="video-frame" id="fv-player-1"></div>
 
       <h3 class="video-artist">Artist Name 1</h3>
-      <p class="video-description">Short custom description for this video.</p>
+      <p class="video-description">Short custom description here.</p>
 
-      <a class="video-link" href="https://youtube.com/watch?v=YOUTUBE_VIDEO_ID_1" target="_blank">
-        <em>Go to Page</em>
+      <a href="https://youtube.com/watch?v=YOUTUBE_VIDEO_ID_1" target="_blank" class="go-btn">
+        Go to Page
       </a>
     </div>
 
     <!-- CARD 2 -->
-    <div class="featured-video-card" data-video-id="YOUTUBE_VIDEO_ID_2">
-      <div class="video-wrapper" id="player-2"></div>
+    <div class="video-card" data-video-id="YOUTUBE_VIDEO_ID_2">
+      <div class="video-frame" id="fv-player-2"></div>
 
       <h3 class="video-artist">Artist Name 2</h3>
-      <p class="video-description">Short custom description for this video.</p>
+      <p class="video-description">Short custom description here.</p>
 
-      <a class="video-link" href="https://youtube.com/watch?v=YOUTUBE_VIDEO_ID_2" target="_blank">
-        <em>Go to Page</em>
+      <a href="https://youtube.com/watch?v=YOUTUBE_VIDEO_ID_2" target="_blank" class="go-btn">
+        Go to Page
       </a>
     </div>
 
     <!-- CARD 3 -->
-    <div class="featured-video-card" data-video-id="YOUTUBE_VIDEO_ID_3">
-      <div class="video-wrapper" id="player-3"></div>
+    <div class="video-card" data-video-id="YOUTUBE_VIDEO_ID_3">
+      <div class="video-frame" id="fv-player-3"></div>
 
       <h3 class="video-artist">Artist Name 3</h3>
-      <p class="video-description">Short custom description for this video.</p>
+      <p class="video-description">Short custom description here.</p>
 
-      <a class="video-link" href="https://youtube.com/watch?v=YOUTUBE_VIDEO_ID_3" target="_blank">
-        <em>Go to Page</em>
+      <a href="https://youtube.com/watch?v=YOUTUBE_VIDEO_ID_3" target="_blank" class="go-btn">
+        Go to Page
       </a>
     </div>
 
     <!-- CARD 4 -->
-    <div class="featured-video-card" data-video-id="YOUTUBE_VIDEO_ID_4">
-      <div class="video-wrapper" id="player-4"></div>
+    <div class="video-card" data-video-id="YOUTUBE_VIDEO_ID_4">
+      <div class="video-frame" id="fv-player-4"></div>
 
       <h3 class="video-artist">Artist Name 4</h3>
-      <p class="video-description">Short custom description for this video.</p>
+      <p class="video-description">Short custom description here.</p>
 
-      <a class="video-link" href="https://youtube.com/watch?v=YOUTUBE_VIDEO_ID_4" target="_blank">
-        <em>Go to Page</em>
+      <a href="https://youtube.com/watch?v=YOUTUBE_VIDEO_ID_4" target="_blank" class="go-btn">
+        Go to Page
       </a>
     </div>
 
   </div>
 </section>
+
 
 <!-- BEAT CATALOG -->
 <div class="glass-box">
@@ -788,69 +817,60 @@ document.getElementById("nextPage").addEventListener("click", () => {
 });
 
 </script>
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <!-- FEATURED VIDEOS 3D CAROUSEL JS -->
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-let players = {};
+let fvPlayers = {};
+let fvIndex = 0; // which card is center
 
 function onYouTubeIframeAPIReady() {
-  document.querySelectorAll('.featured-video-card').forEach((card, index) => {
-    const videoId = card.dataset.videoId;
-    const playerId = `player-${index+1}`;
+  document.querySelectorAll(".video-card").forEach((card, i) => {
+    const vid = card.dataset.videoId;
+    const frameId = "fv-player-" + (i+1);
 
-    players[playerId] = new YT.Player(playerId, {
-      videoId: videoId,
-      playerVars: {
-        autoplay: 0,
-        mute: 1,
-        controls: 1,
-        playsinline: 1
-      }
+    fvPlayers[frameId] = new YT.Player(frameId, {
+      videoId: vid,
+      playerVars: { autoplay: 0, mute: 1, controls: 1, playsinline: 1 }
     });
   });
+
+  setTimeout(() => updateFVPositions(), 500);
+  setInterval(() => rotateFV(), 4000);
 }
 
-const cards = document.querySelectorAll('.featured-video-card');
+function updateFVPositions() {
+  const cards = document.querySelectorAll(".video-card");
+  cards.forEach(card => card.className = "video-card");
 
-function updateActiveCard() {
-  let centerX = window.innerWidth / 2;
+  const total = cards.length;
 
-  let closestCard = null;
-  let closestDistance = Infinity;
+  const center = fvIndex % total;
+  const right = (fvIndex + 1) % total;
+  const back = (fvIndex + 2) % total;
+  const left = (fvIndex + 3) % total;
 
-  cards.forEach(card => {
-    const rect = card.getBoundingClientRect();
-    const cardCenter = rect.left + rect.width / 2;
-    const distance = Math.abs(centerX - cardCenter);
+  cards[center].classList.add("center");
+  cards[right].classList.add("right");
+  cards[back].classList.add("back");
+  cards[left].classList.add("left");
 
-    if (distance < closestDistance) {
-      closestDistance = distance;
-      closestCard = card;
-    }
-  });
-
-  cards.forEach(card => card.classList.remove('active'));
-  closestCard.classList.add('active');
-
-  Object.keys(players).forEach((id, i) => {
-    if (cards[i] === closestCard) {
-      players[id].playVideo();
-      players[id].mute();
+  Object.keys(fvPlayers).forEach((id, i) => {
+    if (i === center) {
+      fvPlayers[id].playVideo();
+      fvPlayers[id].mute();
     } else {
-      players[id].pauseVideo();
+      fvPlayers[id].pauseVideo();
     }
   });
 }
 
-document.querySelector('.video-carousel').addEventListener('scroll', () => {
-  clearTimeout(window.snapTimeout);
-  window.snapTimeout = setTimeout(updateActiveCard, 150);
-});
-
-window.addEventListener('load', () => {
-  setTimeout(updateActiveCard, 500);
-});
+function rotateFV() {
+  fvIndex++;
+  updateFVPositions();
+}
 </script>
+
 
 </div>
 </body>
