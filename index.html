@@ -1136,8 +1136,6 @@ async function loadDailyVerses() {
 
   const verses = [
     getRandomFromBooks(allBooks),
-    getRandomFromBooks(psalmsOnly),
-    getRandomFromBooks(proverbsOnly)
   ];
 
   const store = { date: now.toDateString(), verses };
