@@ -551,12 +551,16 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  font-size: 16px;
+  font-size: 8px;
+  font-weight: bold;
+  font-style: italic;
   color: orange;
-  background: rgba(0,0,0,0.6);
-  padding: 2px 6px;
-  border-radius: 6px;
+  background: none;
+  padding: 0;
   z-index: 10;
+  text-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+
 }
 
 
@@ -1099,7 +1103,8 @@ function renderPage() {
 
     // BUILD CARD HTML (includes new-icon)
     card.innerHTML = `
-      <span class="new-icon">⚠️</span>
+      <span class="new-icon"><b><i>NEW!</i></b></span>
+
 
       <div class="beat-info">
         <h3>${beat.title}</h3>
