@@ -546,22 +546,56 @@
 .fv-left { left: 10px; }
 .fv-right { right: 10px; }
 
-/*New Beats Icon*/
-  .new-icon {
+.new-icon {
   position: absolute;
   top: 8px;
   right: 8px;
-  font-size: 8px;
+  font-size: 14px;
   font-weight: bold;
   font-style: italic;
   color: orange;
-  background: none;
-  padding: 0;
   z-index: 10;
-  text-shadow: 0 0 6px rgba(0,0,0,0.4);
+  animation: newPulse 1.8s ease-in-out infinite;
+  text-shadow: 0 0 6px rgba(255, 140, 0, 0.6);
 }
 
+@keyframes newPulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+    text-shadow: 0 0 6px rgba(255, 140, 0, 0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+    text-shadow: 0 0 12px rgba(255, 165, 0, 0.9);
+  }
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+    text-shadow: 0 0 6px rgba(255, 140, 0, 0.6);
+  }
 }
+  .fav-star {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 22px;
+  cursor: pointer;
+  user-select: none;
+  color: transparent;                 /* no fill */
+  -webkit-text-stroke: 2px orange;    /* orange outline */
+  transition: all 0.2s ease;
+}
+
+.fav-star.filled {
+  color: orange;                      /* solid fill */
+  -webkit-text-stroke: 0px;           /* remove outline */
+  transform: scale(1.15);             /* pop animation */
+}
+
+
+
 
 
 </style>
@@ -1104,6 +1138,7 @@ function renderPage() {
     // BUILD CARD HTML (includes new-icon)
     card.innerHTML = `
       <span class="new-icon"><b><i>NEW!</i></b></span>
+      <span class="fav-star" data-id="${beat.id}">☆</span>
 
 
       <div class="beat-info">
@@ -1131,7 +1166,31 @@ function renderPage() {
 
     list.appendChild(card);
   });
+function initFavoriteStars() {
+  document.querySelectorAll(".fav-star").forEach(star => {
+    const id = star.dataset.id;
 
+    // Load saved state
+    if (localStorage.getItem("favorite_" + id) === "true") {
+      star.textContent = "★";
+      star.classList.add("filled");
+    }
+
+    // Toggle on click
+    star.addEventListener("click", () => {
+      const isFav = star.classList.toggle("filled");
+
+      if (isFav) {
+        star.textContent = "★";
+        localStorage.setItem("favorite_" + id, "true");
+      } else {
+        star.textContent = "☆";
+        localStorage.removeItem("favorite_" + id);
+      }
+    });
+  });
+}
+  initFavoriteStars();
   initCustomPlayers();
   updatePaginationUI();
 }
