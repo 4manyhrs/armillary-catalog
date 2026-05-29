@@ -1087,7 +1087,7 @@ function changePlayMode() {
 }
 
 
-    function renderPage() {
+function renderPage() {
   const list = document.getElementById("beatList");
   list.innerHTML = "";
 
@@ -1097,16 +1097,10 @@ function changePlayMode() {
     const card = document.createElement("div");
     card.className = "beat-card";
 
-    // NEW BEAT ICON
-const viewed = localStorage.getItem("viewed_" + beat.id);
-const newIcon = document.createElement("span");
-newIcon.className = "new-icon";
-newIcon.textContent = "⚠️";
-if (viewed === "true") newIcon.style.display = "none";
-card.appendChild(newIcon);
-
+    // BUILD CARD HTML (includes new-icon)
     card.innerHTML = `
-    <span class="new-icon">⚠️</span>
+      <span class="new-icon">⚠️</span>
+
       <div class="beat-info">
         <h3>${beat.title}</h3>
         <p>${beat.artist}</p>
@@ -1123,11 +1117,12 @@ card.appendChild(newIcon);
         <input type="range" class="volume" min="0" max="1" step="0.01" value="1">
       </div>
     `;
-    
-const viewed = localStorage.getItem("viewed_" + beat.id);
-if (viewed === "true") {
-  card.querySelector(".new-icon").style.display = "none";
-}
+
+    // HIDE ICON IF VIEWED
+    const viewed = localStorage.getItem("viewed_" + beat.id);
+    if (viewed === "true") {
+      card.querySelector(".new-icon").style.display = "none";
+    }
 
     list.appendChild(card);
   });
@@ -1135,6 +1130,7 @@ if (viewed === "true") {
   initCustomPlayers();
   updatePaginationUI();
 }
+
     function updatePaginationUI() {
   const totalPages = Math.ceil(totalBeats / beatsPerPage);
 
