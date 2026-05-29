@@ -661,6 +661,12 @@
   <h2>Armillary Beat Catalog</h2>
   <p>Beats uploaded by producers will appear here automatically once we connect the dynamic loader.</p>
 
+  <select id="playMode" onchange="changePlayMode()" style="margin-bottom:10px;">
+  <option value="order">Play In Order</option>
+  <option value="loop">Loop Current</option>
+  <option value="random">Randomizer</option>
+</select>
+
   <select id="sortSelect" onchange="applySorting()">
   <option value="newest">Newest First</option>
   <option value="oldest">Oldest First</option>
@@ -983,6 +989,10 @@ function initCustomPlayers() {
     });
 
     audio.addEventListener("timeupdate", () => {
+      audio.addEventListener("ended", () => {
+  handleTrackEnd(player);
+});
+
       seek.value = (audio.currentTime / audio.duration) * 100;
       currentTimeEl.textContent = formatTime(audio.currentTime);
     });
@@ -1004,6 +1014,34 @@ function initCustomPlayers() {
     });
   });
 }
+    
+function handleTrackEnd(player) {
+  const beatId = player.dataset.id;
+
+  if (playMode === "loop") {
+    // Replay same beat
+    player.querySelector(".play-btn").click();
+    return;
+  }
+
+  const players = [...document.querySelectorAll(".audio-player")];
+  const index = players.indexOf(player);
+
+  let nextIndex;
+
+  if (playMode === "random") {
+    nextIndex = Math.floor(Math.random() * players.length);
+  } else {
+    // ORDER MODE
+    nextIndex = index + 1;
+    if (nextIndex >= players.length) return; // stop at end
+  }
+
+  const nextPlayer = players[nextIndex];
+  if (!nextPlayer) return;
+
+  nextPlayer.querySelector(".play-btn").click();
+}
 
 function formatTime(sec) {
   const m = Math.floor(sec / 60);
@@ -1017,6 +1055,12 @@ function formatTime(sec) {
     let totalBeats = 0;
     let currentSortColumn = "id";
     let currentSortAscending = false;
+    let playMode = "order"; // "order", "loop", "random"
+
+function changePlayMode() {
+  playMode = document.getElementById("playMode").value;
+}
+
 
    async function applySorting() {
   const mode = document.getElementById("sortSelect").value;
