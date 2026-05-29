@@ -11,13 +11,18 @@
   <div id="dailyVerseBar">
   <div id="dailyVerseScroll"></div>
 </div>
-<div id="verseModal">
-  <div id="verseModalContent">
-    <span id="closeVerseModal">&times;</span>
-    <h3 id="verseModalRef"></h3>
-    <p id="verseModalText"></p>
-  </div>
+
+<div id="verseModal" style="display:none; position:fixed; inset:0; 
+     background:rgba(0,0,0,0.6); justify-content:center; align-items:center;">
+    
+    <div class="verseModalBox" style="background:#111; padding:20px; border-radius:10px;">
+        <h2 id="verseModalRef">Daily Verse</h2>
+        <p id="verseModalText"></p>
+    </div>
+
 </div>
+
+
 
 <style>
   body {
