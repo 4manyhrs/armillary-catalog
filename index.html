@@ -546,6 +546,18 @@
 .fv-left { left: 10px; }
 .fv-right { right: 10px; }
 
+/*New Beats Icon*/
+  .new-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 16px;
+  color: orange;
+  background: rgba(0,0,0,0.6);
+  padding: 2px 6px;
+  border-radius: 6px;
+  z-index: 10;
+}
 
 
 </style>
@@ -947,8 +959,18 @@ function initCustomPlayers() {
   if (audio.paused) {
     audio.play();
     playBtn.textContent = "⏸";
+
+// MARK BEAT AS VIEWED
+    const beatId = player.dataset.id;
+    localStorage.setItem("viewed_" + beatId, "true");
+
+    const parentCard = player.closest(".beat-card");
+    const icon = parentCard.querySelector(".new-icon");
+    if (icon) icon.style.display = "none";
+
     currentAudio = audio;
     currentPlayBtn = playBtn;
+    
   } else {
     audio.pause();
     playBtn.textContent = "▶";
@@ -1031,6 +1053,14 @@ function formatTime(sec) {
     const card = document.createElement("div");
     card.className = "beat-card";
 
+    // NEW BEAT ICON
+const viewed = localStorage.getItem("viewed_" + beat.id);
+const newIcon = document.createElement("span");
+newIcon.className = "new-icon";
+newIcon.textContent = "⚠️";
+if (viewed === "true") newIcon.style.display = "none";
+card.appendChild(newIcon);
+
     card.innerHTML = `
       <div class="beat-info">
         <h3>${beat.title}</h3>
@@ -1038,7 +1068,7 @@ function formatTime(sec) {
         <p class="meta">${beat.mood || ''} • ${beat.genre || ''}</p>
       </div>
 
-      <div class="audio-player" data-src="${beat.file_url}">
+      <div class="audio-player" data-src="${beat.file_url}" data-id="${beat.id}">
         <button class="play-btn">▶</button>
         <span class="time current">0:00</span>
         <input type="range" class="seek" value="0" min="0" max="100">
