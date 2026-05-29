@@ -219,6 +219,7 @@
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  pointer-events: auto;
 }
 
 #verseModalContent {
@@ -229,6 +230,7 @@
   color: #ffb366;
   text-shadow: 0 0 6px #ff7a00;
   border: 1px solid rgba(255,140,0,0.3);
+  pointer-events: auto;
 }
 
 #closeVerseModal {
@@ -238,7 +240,9 @@
   color: #ff7a00;
 }
 
-
+#verseModal > * {
+  pointer-events: auto;
+}
   /* Notepad */
   textarea {
     width: 100%;
@@ -1213,6 +1217,9 @@ document.getElementById("dailyVerseBar").addEventListener("click", () => {
   document.getElementById("verseModal").style.display = "flex";
 });
 
+document.getElementById("verseModalContent").addEventListener("click", (e) => {
+  e.stopPropagation();
+});
 
 /* === INSERT: TAP OUTSIDE TO CLOSE MODAL === */
 window.addEventListener("click", (e) => {
