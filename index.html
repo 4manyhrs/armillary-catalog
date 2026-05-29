@@ -15,6 +15,7 @@
 <div id="verseModalContent" >
 <span id="closeVerseModal"></span> <h3 id="verseModalRef"></h3>
 <p id="verseModalText"> </p>
+    <button id="closeVerseBtn" class="verse-close-btn">Close</button>
 </div> 
 </div>
 
@@ -243,6 +244,26 @@
 #verseModal > * {
   pointer-events: auto;
 }
+
+.verse-close-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px 0;
+  background: linear-gradient(135deg, #ff7a00, #ff9a33);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-shadow: 0 0 4px rgba(0,0,0,0.4);
+  transition: 0.2s ease;
+}
+
+.verse-close-btn:hover {
+  opacity: 0.9;
+}
+
   /* Notepad */
   textarea {
     width: 100%;
@@ -1215,6 +1236,10 @@ document.getElementById("dailyVerseBar").addEventListener("click", () => {
     modalText.replace(/\n/g, "<br>");
 
   document.getElementById("verseModal").style.display = "flex";
+});
+
+document.getElementById("closeVerseBtn").addEventListener("click", () => {
+  document.getElementById("verseModal").style.display = "none";
 });
 
 document.getElementById("verseModalContent").addEventListener("click", (e) => {
