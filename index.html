@@ -153,6 +153,8 @@
 /* Daily Verse*/
   
   #dailyVerseScroll.loading {
+  position: relative;
+  z-index: 1;
   opacity: 0.6;
   font-style: italic;
 }
@@ -168,6 +170,8 @@
 
 
 #dailyVerseScroll {
+  position: relative;
+  z-index: 2;
   display: inline-block;
   white-space: nowrap;
   font-size: 18px;
@@ -1124,28 +1128,49 @@ function getRandomFromBooks(bookList) {
 }
 
 // Daily caching logic
-async function loadDailyVerses() {
-  const saved = JSON.parse(localStorage.getItem("dailyVerses"));
+/* === INSERT: 6AM DAILY KEY LOGIC === */
+function getDailyKey() {
   const now = new Date();
   const hour = now.getHours();
 
-  if (saved && saved.date === now.toDateString() && hour < 6) {
-    displayVerses(saved.verses);
-    return;
+  // Before 6 AM → treat as previous day
+  if (hour < 6) {
+    now.setDate(now.getDate() - 1);
   }
+
+  // YYYY-MM-DD
+  return now.toISOString().split("T")[0];
+}
+
+async function loadDailyVerses() {
+  /* === REPLACE WITH DAILY KEY CHECK === */
+const saved = JSON.parse(localStorage.getItem("dailyVerses"));
+const key = getDailyKey();
+
+// If saved & same key → use it
+if (saved && saved.key === key) {
+  displayVerses(saved.verses);
+  return;
+}
+
 
   const verses = [
     getRandomFromBooks(allBooks),
   ];
 
-  const store = { date: now.toDateString(), verses };
-  localStorage.setItem("dailyVerses", JSON.stringify(store));
+/* === REPLACE WITH DAILY KEY SAVE === */
+const store = { key, verses };
+localStorage.setItem("dailyVerses", JSON.stringify(store));
+
 
   displayVerses(verses);
 }
 
 // Display in scroll bar
 function displayVerses(list) {
+  
+  hideLoader();
+
   scrollEl.classList.remove("loading");
 
   let combined = "";
@@ -1156,6 +1181,14 @@ function displayVerses(list) {
 
     combined += `${v.ref} │ "${text}"     `;
   });
+  
+}
+
+/* === INSERT: LOADER HELPER OUTSIDE FUNCTION === */
+function hideLoader() {
+  clearInterval(loaderInterval);
+  scrollEl.classList.remove("loading");
+}
 
   scrollEl.textContent = combined + combined;
 }
@@ -1175,6 +1208,15 @@ document.getElementById("dailyVerseBar").addEventListener("click", () => {
 
   document.getElementById("verseModal").style.display = "flex";
 });
+
+/* === INSERT: TAP OUTSIDE TO CLOSE MODAL === */
+window.addEventListener("click", (e) => {
+  const modal = document.getElementById("verseModal");
+  if (e.target === modal) {
+    modal.style.display = "none";
+  }
+});
+
 
 function cleanText(str) {
   if (!str) return "";
