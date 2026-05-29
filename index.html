@@ -1088,17 +1088,16 @@ document.getElementById("nextPage").addEventListener("click", () => {
 /* ADDING BIBLE VERSES HERE */
 <script> 
 
+  function startLoader() {
+  scrollEl.classList.add("loading");
+
+  loaderInterval = setInterval(() => {
+    dots = (dots + 1) % 4;
+    scrollEl.textContent = "Loading daily scriptures" + ".".repeat(dots);
+  }, 500);
+}
+
 const scrollEl = document.getElementById("dailyVerseScroll");
-scrollEl.classList.add("loading");
-
-let dots = 0;
-
-/* === FIX: loaderInterval must exist === */
-let loaderInterval = setInterval(() => {
-  dots = (dots + 1) % 4;
-  scrollEl.textContent = "Loading daily scriptures" + ".".repeat(dots);
-}, 500);
-
 
 /*FULL BIBLE DIRECTORY REFERENCE FOR SCROLL RANDOMIZER*/
 
@@ -1219,13 +1218,6 @@ scrollEl.style.animation = ""; // restart animation
 }
 
 
-/* === INSERT: LOADER HELPER OUTSIDE FUNCTION === */
-function hideLoader() {
-  clearInterval(loaderInterval);
-  scrollEl.classList.remove("loading");
-}
-
-
 // Modal click logic (unchanged)
 document.getElementById("dailyVerseBar").addEventListener("click", () => {
   const saved = JSON.parse(localStorage.getItem("dailyVerses"));
@@ -1286,9 +1278,8 @@ document.getElementById("toggleNamesBtn").addEventListener("click", () => {
 });
 
 async function initBible() {
+  startLoader();
   bible = await loadKJV();
-
-  // ⭐ FIX: Build allBooks dynamically
   window.allBooks = Object.keys(bible);
 
   loadDailyVerses();
