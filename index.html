@@ -1066,12 +1066,13 @@ const scrollEl = document.getElementById("dailyVerseScroll");
 scrollEl.classList.add("loading");
 
 let dots = 0;
-setInterval(() => {
+
+/* === FIX: loaderInterval must exist === */
+let loaderInterval = setInterval(() => {
   dots = (dots + 1) % 4;
   scrollEl.textContent = "Loading daily scriptures" + ".".repeat(dots);
 }, 500);
 
-// ❌ Removed stray "};" — this was breaking your entire script
 
 /*FULL BIBLE DIRECTORY REFERENCE FOR SCROLL RANDOMIZER*/
 
@@ -1127,7 +1128,7 @@ function getRandomFromBooks(bookList) {
   };
 }
 
-// Daily caching logic
+
 /* === INSERT: 6AM DAILY KEY LOGIC === */
 function getDailyKey() {
   const now = new Date();
@@ -1142,34 +1143,35 @@ function getDailyKey() {
   return now.toISOString().split("T")[0];
 }
 
+
+// Daily caching logic
 async function loadDailyVerses() {
+
   /* === REPLACE WITH DAILY KEY CHECK === */
-const saved = JSON.parse(localStorage.getItem("dailyVerses"));
-const key = getDailyKey();
+  const saved = JSON.parse(localStorage.getItem("dailyVerses"));
+  const key = getDailyKey();
 
-// If saved & same key → use it
-if (saved && saved.key === key) {
-  displayVerses(saved.verses);
-  return;
-}
-
+  if (saved && saved.key === key) {
+    displayVerses(saved.verses);
+    return;
+  }
 
   const verses = [
     getRandomFromBooks(allBooks),
   ];
 
-/* === REPLACE WITH DAILY KEY SAVE === */
-const store = { key, verses };
-localStorage.setItem("dailyVerses", JSON.stringify(store));
-
+  /* === REPLACE WITH DAILY KEY SAVE === */
+  const store = { key, verses };
+  localStorage.setItem("dailyVerses", JSON.stringify(store));
 
   displayVerses(verses);
 }
 
+
 // Display in scroll bar
 function displayVerses(list) {
-  
-  hideLoader();
+
+  hideLoader(); // correct placement
 
   scrollEl.classList.remove("loading");
 
@@ -1181,15 +1183,18 @@ function displayVerses(list) {
 
     combined += `${v.ref} │ "${text}"     `;
   });
-  
+
+  /* === FIX: This line must be INSIDE the function === */
+  scrollEl.textContent = combined + combined;
 }
+
 
 /* === INSERT: LOADER HELPER OUTSIDE FUNCTION === */
 function hideLoader() {
   clearInterval(loaderInterval);
   scrollEl.classList.remove("loading");
-  scrollEl.textContent = combined + combined;
 }
+
 
 // Modal click logic (unchanged)
 document.getElementById("dailyVerseBar").addEventListener("click", () => {
@@ -1206,6 +1211,7 @@ document.getElementById("dailyVerseBar").addEventListener("click", () => {
 
   document.getElementById("verseModal").style.display = "flex";
 });
+
 
 /* === INSERT: TAP OUTSIDE TO CLOSE MODAL === */
 window.addEventListener("click", (e) => {
@@ -1251,10 +1257,10 @@ async function initBible() {
   loadDailyVerses();
 }
 
-// ⭐ Call the function AFTER it is fully defined
 initBible();
 
 </script>
+
 
 
 
