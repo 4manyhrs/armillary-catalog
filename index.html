@@ -159,6 +159,7 @@
   z-index: 1;
   opacity: 0.6;
   font-style: italic;
+  animation:none;
 }
 
 #dailyVerseBar {
@@ -1198,7 +1199,7 @@ async function loadDailyVerses() {
 function displayVerses(list) {
 
   hideLoader(); // correct placement
-
+  scrollEl.style.animation = "none";
   scrollEl.classList.remove("loading");
 
   let combined = "";
@@ -1212,6 +1213,10 @@ function displayVerses(list) {
 
   /* === FIX: This line must be INSIDE the function === */
   scrollEl.textContent = combined + combined;
+  
+  void scrollEl.offsetWidth; // force reflow (required for Safari)
+scrollEl.style.animation = ""; // restart animation
+
 }
 
 
