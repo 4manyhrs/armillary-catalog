@@ -80,6 +80,7 @@
 
 .beat-card {
   display: grid;
+  position: relative;
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: 20px;
@@ -118,7 +119,7 @@
   align-items: center;
   gap: 10px;
   background: rgba(255,255,255,0.05); 
-  padding: 8px 40px 8px 12px; /* top | right | bottom | left */
+  padding: 8px 12px; /* top | right | bottom | left */
   border-radius: 12px;
   backdrop-filter: blur(8px);
   width: 100%;
@@ -577,17 +578,23 @@
   }
 }
   .fav-star {
-  position: absolute;
-  right: 10px;               /* push to the far right */
-  top: 50%;                  /* center vertically */
-  transform: translateY(-50%);
+  grid-column: 2;
+  align-self: center;
+  margin-right: 10px;
+
   font-size: 20px;
   cursor: pointer;
   user-select: none;
 
+  color: transparent;
+  -webkit-text-stroke: 0.5px #777;
+  opacity: 0.45;
+  transition: all 0.2s ease;
+}
+
   /* GREY OUTLINE (thin) */
   color: transparent;
-  -webkit-text-stroke: 0.12px #FFF;   /* thin grey outline */
+  -webkit-text-stroke: 0.07px #FFF;   /* thin grey outline */
   opacity: 0.7;                /* opacity if needed blended with card */
   transition: all 0.2s ease;
 }
