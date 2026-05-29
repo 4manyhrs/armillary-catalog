@@ -1085,7 +1085,7 @@ document.getElementById("nextPage").addEventListener("click", () => {
 </script>
 
   
-/* ADDING BIBLE VERSES HERE */
+
 <script> 
 
   function startLoader() {
@@ -1193,6 +1193,9 @@ async function loadDailyVerses() {
   displayVerses(verses);
 }
 
+function hideLoader() {
+  clearInterval(loaderInterval);
+}
 
 // Display in scroll bar
 function displayVerses(list) {
