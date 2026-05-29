@@ -159,10 +159,11 @@
   z-index: 1;
   opacity: 0.6;
   font-style: italic;
+  animation: none;
 }
 
 #dailyVerseBar {
-  width: 100%;
+  width: 100dvw;
   overflow: hidden;
   background: #0d0d0f; /* matches your site’s dark theme */
   padding: 12px 0;
@@ -1255,9 +1256,6 @@ function cleanText(str) {
   if (!str) return "";
   return str.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 }
-
-document.getElementById("dailyVerseScroll").textContent =
-  "Loading daily scriptures…";
 
 function applyKingdomNames(text) {
   return text
