@@ -577,7 +577,8 @@
     text-shadow: 0 0 6px rgba(255, 140, 0, 0.6);
   }
 }
-  .fav-star {
+ .fav-star {
+  float: right;              /* pushes star to the right */
   font-size: 20px;
   cursor: pointer;
   user-select: none;
@@ -588,22 +589,15 @@
   opacity: 0.45;
   transition: all 0.2s ease;
 
-  justify-self: end;   /* push it to the right of its column */
-  margin-right: 10px;  /* small inward nudge */
-}
-
-  /* GREY OUTLINE (thin) */
-  color: transparent;
-  -webkit-text-stroke: 0.07px #FFF;   /* thin grey outline */
-  opacity: 0.7;                /* opacity if needed blended with card */
-  transition: all 0.2s ease;
+  margin-left: 10px;         /* space between player + star */
+  margin-top: 2px;           /* tiny vertical alignment tweak */
 }
 
 .fav-star.filled {
-  color: orange;                     /* solid orange fill */
-  -webkit-text-stroke: 0px;          /* remove outline */
-  opacity: 1;                        /* full visibility */
-  transform: translateY(-50%) scale(1.15); /* subtle pop */
+  color: orange;
+  -webkit-text-stroke: 0px;
+  opacity: 1;
+  transform: scale(1.12);
 }
 
 
