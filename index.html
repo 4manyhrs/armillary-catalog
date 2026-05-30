@@ -578,18 +578,18 @@
   }
 }
   .fav-star {
-  grid-column: 2;
-  align-self: center;
-  margin-right: 10px;
-
   font-size: 20px;
   cursor: pointer;
   user-select: none;
 
+  /* THIN GREY OUTLINE */
   color: transparent;
   -webkit-text-stroke: 0.5px #777;
   opacity: 0.45;
   transition: all 0.2s ease;
+
+  justify-self: end;   /* push it to the right of its column */
+  margin-right: 10px;  /* small inward nudge */
 }
 
   /* GREY OUTLINE (thin) */
