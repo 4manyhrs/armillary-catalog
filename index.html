@@ -71,8 +71,145 @@
   button:hover {
     opacity: 0.9;
   }
+/*NEW BEAT CARD DESIGN TESTING STARTS HERE */
 
-.beat-list {
+.beat-card {
+  position: relative;
+  width: 100%;
+  padding: 26px 28px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: var(--panel-color, #000);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Background Panel */
+.panel-bg svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.panel-glow svg {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* NEW badge 
+.new-icon {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  font-size: 14px;
+  color: orange;
+  animation: newPulse 1.8s ease-in-out infinite;
+} */
+
+/* Favorite star */
+.favorite-toggle {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+}
+
+/* LEFT SIDE */
+.beat-left {
+  width: 70%;
+  z-index: 2;
+}
+
+.beat-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.beat-artist {
+  margin: 4px 0;
+  font-size: 16px;
+  opacity: 0.85;
+}
+
+.beat-meta {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+.beat-tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.beat-tags .tag {
+  background: rgba(255,255,255,0.12);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.beat-files {
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.beat-files a {
+  color: #ffb366;
+  text-decoration: none;
+  font-style: italic;
+}
+
+/* Waveform row */
+.waveform-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.play-button svg {
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+}
+
+.waveform {
+  flex: 1;
+  height: 40px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 8px;
+}
+
+/* RIGHT SIDE */
+.beat-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  z-index: 2;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat svg {
+  width: 20px;
+  height: 20px;
+}
+  
+/*.beat-list {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -101,7 +238,7 @@
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-}
+} */
 
 .beat-info p {
   margin: 0;
@@ -599,15 +736,11 @@
   opacity: 1;
   transform: scale(1.12);
 }
-
-
-
-
-
-
 </style>
 </head>
 
+
+<!--BODY/MAIN CODE STARTS HERE-->
 <body>
   <div id="appWrapper">
 <div class="container">
@@ -675,32 +808,9 @@
  </div>
   <div class="fv-arrow fv-right">&#10095;</div>
     </div>
-  
-  
-  
-  
-
-  
-  
-
-
 </section>
-
 </div>
   
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!-- BEAT CATALOG -->
 <div class="glass-box">
   <h2>Armillary Beat Catalog</h2>
@@ -725,10 +835,74 @@
   <span id="pageInfo"></span>
   <button id="nextPage">Next</button>
 </div>
+</div>
 
+    <!--NEW BEAT CARD REDESIGN TESTING -->
+<div class="beat-card" data-id="${beat.id}" style="--panel-color:${panelColor}">
+  
+  <!-- Background Panel -->
+  <div class="panel-bg">${SVGs.panel}</div>
+
+  <!-- Glow Layer -->
+  <div class="panel-glow">${SVGs.glow}</div>
+
+  <!-- NEW badge -->
+  <span class="new-icon"><b><i>NEW!</i></b></span>
+
+  <!-- Favorite Star (top-right) -->
+  <div class="favorite-toggle icon-fav" data-id="${beat.id}">
+    ${beatIsFav ? SVGs.fav : SVGs.unfav}
+  </div>
+
+  <!-- LEFT SIDE -->
+  <div class="beat-left">
+    <h3 class="beat-title">${beat.title}</h3>
+    <p class="beat-artist">${beat.artist}</p>
+    <p class="beat-meta">${beat.genre || ''} • ${beat.mood || ''}</p>
+
+    <div class="beat-tags">
+      ${tagsHTML}
+    </div>
+
+    <div class="beat-files">
+      <a href="#" class="file-link">FREE</a> |
+      <a href="#" class="file-link">.MP3</a> |
+      <a href="#" class="file-link">.WAV</a> |
+      <a href="#" class="file-link">STEMS</a>
+    </div>
+
+    <!-- Waveform + Play Button -->
+    <div class="waveform-row">
+      <div class="play-button icon-play">${SVGs.play}</div>
+      <div class="waveform" data-id="${beat.id}"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="beat-right">
+    <div class="stat">
+      <div class="icon-eye">${SVGs.eye}</div>
+      <span class="stat-number">1000</span>
+    </div>
+
+    <div class="stat">
+      <div class="icon-flame">${SVGs.flame}</div>
+      <span class="stat-number">23</span>
+    </div>
+
+    <div class="stat">
+      <div class="icon-send">${SVGs.send}</div>
+      <span class="stat-number">1</span>
+    </div>
+  </div>
+
+  <!-- Hidden audio element (keeps your JS working) -->
+  <audio class="audio-player" data-src="${beat.file_url}" data-id="${beat.id}"></audio>
 
 </div>
 
+<!--END OF NEW BEAT CARD DESIGN TESTING-->
+    
 <!-- FREE SUPABASE UPLOADER -->
 <div class="glass-box">
   <h2>Upload a Beat</h2>
@@ -1139,33 +1313,113 @@ function renderPage() {
   const pageBeats = allBeats;
 
   pageBeats.forEach(beat => {
+
+    /* -------------------------
+       GENRE COLOR SYSTEM
+    ------------------------- */
+    const genreColors = {
+      "Trap": "#3a0000",
+      "Boom Bap": "#2b1a00",
+      "R&B": "#2b0030",
+      "Drill": "#1a1a1a",
+      "Lo-Fi": "#003333",
+      "Pop": "#330033",
+      "EDM": "#001a33",
+      "Hyper-Hop": "#1a0033",
+      "Kingdom": "#332200"
+    };
+
+    const panelColor = genreColors[beat.genre] || "#000000";
+
+    /* -------------------------
+       TAGS (TEMPORARY STATIC)
+    ------------------------- */
+    const tags = [
+      beat.genre || "Hip-Hop",
+      beat.mood || "Vibes",
+      "Hip-Hop"
+    ];
+
+    const tagsHTML = tags
+      .map(t => `<span class="tag">#${t.replace(/\s+/g, '')}</span>`)
+      .join("");
+
+    /* -------------------------
+       FAVORITE STATE
+    ------------------------- */
+    const beatIsFav = localStorage.getItem("favorite_" + beat.id) === "true";
+
+    /* -------------------------
+       BUILD CARD
+    ------------------------- */
     const card = document.createElement("div");
     card.className = "beat-card";
+    card.style.setProperty("--panel-color", panelColor);
+    card.dataset.id = beat.id;
 
-    // BUILD CARD HTML (includes new-icon)
     card.innerHTML = `
+      <!-- Background Panel -->
+      <div class="panel-bg">${SVGs.panel}</div>
+
+      <!-- Glow Layer -->
+      <div class="panel-glow">${SVGs.glow}</div>
+
+      <!-- NEW badge -->
       <span class="new-icon"><b><i>NEW!</i></b></span>
-      <span class="fav-star" data-id="${beat.id}">☆</span>
 
-
-      <div class="beat-info">
-        <h3>${beat.title}</h3>
-        <p>${beat.artist}</p>
-        <p class="meta">${beat.mood || ''} • ${beat.genre || ''}</p>
+      <!-- Favorite Star -->
+      <div class="favorite-toggle icon-fav" data-id="${beat.id}">
+        ${beatIsFav ? SVGs.fav : SVGs.unfav}
       </div>
 
-      <div class="audio-player" data-src="${beat.file_url}" data-id="${beat.id}">
-        <button class="play-btn">▶</button>
-        <span class="time current">0:00</span>
-        <input type="range" class="seek" value="0" min="0" max="100">
-        <span class="time duration">0:00</span>
-        <button class="skip back">-10</button>
-        <button class="skip forward">+10</button>
-        <input type="range" class="volume" min="0" max="1" step="0.01" value="1">
+      <!-- LEFT SIDE -->
+      <div class="beat-left">
+        <h3 class="beat-title">${beat.title}</h3>
+        <p class="beat-artist">${beat.artist}</p>
+        <p class="beat-meta">${beat.genre || ''} • ${beat.mood || ''}</p>
+
+        <div class="beat-tags">${tagsHTML}</div>
+
+        <div class="beat-files">
+          <a href="#" class="file-link">FREE</a> |
+          <a href="#" class="file-link">.MP3</a> |
+          <a href="#" class="file-link">.WAV</a> |
+          <a href="#" class="file-link">STEMS</a>
+        </div>
+
+        <div class="waveform-row">
+          <div class="play-button icon-play" data-id="${beat.id}">
+            ${SVGs.play}
+          </div>
+          <div class="waveform" data-id="${beat.id}"></div>
+        </div>
       </div>
+
+      <!-- RIGHT SIDE -->
+      <div class="beat-right">
+        <div class="stat">
+          <div class="icon-eye">${SVGs.eye}</div>
+          <span class="stat-number">1000</span>
+        </div>
+
+        <div class="stat">
+          <div class="icon-flame">${SVGs.flame}</div>
+          <span class="stat-number">23</span>
+        </div>
+
+        <div class="stat">
+          <div class="icon-send">${SVGs.send}</div>
+          <span class="stat-number">1</span>
+        </div>
+      </div>
+
+      <!-- Hidden audio element (keeps your JS working) -->
+      <audio class="audio-player" data-src="${beat.file_url}" data-id="${beat.id}"></audio>
     `;
 
-    // HIDE ICON IF VIEWED
+    /* -------------------------
+       VIEWED LOGIC
+    ------------------------- */
     const viewed = localStorage.getItem("viewed_" + beat.id);
     if (viewed === "true") {
       card.querySelector(".new-icon").style.display = "none";
@@ -1173,32 +1427,35 @@ function renderPage() {
 
     list.appendChild(card);
   });
-function initFavoriteStars() {
-  document.querySelectorAll(".fav-star").forEach(star => {
+
+  /* -------------------------
+     FAVORITE STAR LOGIC
+  ------------------------- */
+  document.querySelectorAll(".favorite-toggle").forEach(star => {
     const id = star.dataset.id;
 
-    // Load saved state
-    if (localStorage.getItem("favorite_" + id) === "true") {
-      star.textContent = "★";
-      star.classList.add("filled");
-    }
-
-    // Toggle on click
     star.addEventListener("click", () => {
-      const isFav = star.classList.toggle("filled");
+      const isFav = localStorage.getItem("favorite_" + id) === "true";
 
       if (isFav) {
-        star.textContent = "★";
-        localStorage.setItem("favorite_" + id, "true");
-      } else {
-        star.textContent = "☆";
         localStorage.removeItem("favorite_" + id);
+        star.innerHTML = SVGs.unfav;
+      } else {
+        localStorage.setItem("favorite_" + id, "true");
+        star.innerHTML = SVGs.fav;
       }
     });
   });
-}
-  initFavoriteStars();
+
+  /* -------------------------
+     AUDIO PLAYER LOGIC
+     (your existing system)
+  ------------------------- */
   initCustomPlayers();
+
+  /* -------------------------
+     PAGINATION
+  ------------------------- */
   updatePaginationUI();
 }
 
