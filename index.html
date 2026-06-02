@@ -657,9 +657,44 @@
   -webkit-text-stroke: 0px;
   opacity: 1;
   transform: scale(1.12);
+}#underConstruction {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  color: #fff;
+  z-index: 999999; /* covers EVERYTHING */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
 }
+
+.uc-box {
+  max-width: 600px;
+}
+
+#underConstruction h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+#underConstruction p {
+  font-size: 20px;
+  opacity: 0.8;
+}
+
+
+  
 </style>
 </head>
+  
+<div id="underConstruction">
+  <div class="uc-box">
+    <h1>🚧 UNDER CONSTRUCTION 🚧</h1>
+    <p>We’re cooking up something crazy. Check back soon.</p>
+  </div>
+</div>
 
 
 <!--BODY/MAIN CODE STARTS HERE-->
@@ -902,6 +937,14 @@
 </div>
 
 </div>
+  
+<script>
+  const showConstruction = true; // set to false to disable
+
+  if (!showConstruction) {
+    document.getElementById("underConstruction").style.display = "none";
+  }
+</script>
 
 <!-- 1. Load the official Supabase client library via CDN first -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
