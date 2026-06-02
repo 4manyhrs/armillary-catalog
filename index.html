@@ -73,9 +73,12 @@
   }
 /* NEW BEAT CARD DESIGN TESTING STARTS HERE */
 
+/* 900×300 reference ratio preserved */
 .beat-card {
   position: relative;
   width: 100%;
+  max-width: 900px;
+  aspect-ratio: 3 / 1; /* FIX: prevents stretching */
   padding: 26px 28px;
   border-radius: 22px;
   overflow: hidden;
@@ -85,7 +88,7 @@
   align-items: center;
 }
 
-/* PANEL + GLOW (900x300 reference, responsive) */
+/* PANEL + GLOW (proper layering + subtle hue) */
 .svg-panel,
 .svg-glow {
   position: absolute;
@@ -94,39 +97,42 @@
   height: 100%;
   object-fit: cover;
   pointer-events: none;
+}
+
+/* Panel sits BELOW content */
+.svg-panel {
   z-index: 0;
 }
 
-.panel-bg svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+/* Glow sits ABOVE panel but BELOW content */
+.svg-glow {
+  z-index: 1;
+  opacity: 0.18;       /* FIX: subtle glow */
+  filter: blur(4px);   /* FIX: softens glow edges */
 }
 
-.panel-glow svg {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  opacity: 0.18;      /* softer glow */
-  filter: blur(4px);  /* smoother edges */
-  pointer-events: none;
+/* Content sits ABOVE everything */
+.beat-left,
+.beat-right,
+.favorite-toggle,
+.new-icon {
+  position: relative;
+  z-index: 3;
 }
 
-/* Favorite star (slightly bigger than others) */
+/* Favorite star (bigger) */
 .favorite-toggle {
   position: absolute;
   top: 10px;
   right: 14px;
   cursor: pointer;
-  width: 48px;   /* bigger */
+  width: 48px;   /* FIX: bigger */
   height: 48px;
 }
 
 /* LEFT SIDE */
 .beat-left {
   width: 70%;
-  z-index: 2;
 }
 
 .beat-title {
@@ -178,14 +184,14 @@
   gap: 14px;
 }
 
-/* PLAY BUTTON (slightly bigger) */
+/* Play button (bigger) */
 .play-button svg {
-  width: 48px;   /* bigger */
+  width: 48px;   /* FIX: bigger */
   height: 48px;
   cursor: pointer;
 }
 
-/* WAVEFORM BAR */
+/* Waveform bar */
 .waveform {
   flex: 1;
   height: 40px;
@@ -199,19 +205,12 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
-  z-index: 2;
 }
 
-/* STAT ICONS (standard 40x40) */
+/* Stat icons (40×40 standard) */
 .stat svg {
   width: 40px;
   height: 40px;
-}
-
-.stat {
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
   
