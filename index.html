@@ -71,7 +71,7 @@
   button:hover {
     opacity: 0.9;
   }
-/*NEW BEAT CARD DESIGN TESTING STARTS HERE */
+/* NEW BEAT CARD DESIGN TESTING STARTS HERE */
 
 .beat-card {
   position: relative;
@@ -84,7 +84,8 @@
   justify-content: space-between;
   align-items: center;
 }
-  
+
+/* PANEL + GLOW (900x300 reference, responsive) */
 .svg-panel,
 .svg-glow {
   position: absolute;
@@ -96,7 +97,6 @@
   z-index: 0;
 }
 
-/* Background Panel */
 .panel-bg svg {
   position: absolute;
   inset: 0;
@@ -108,28 +108,19 @@
   position: absolute;
   top: 0;
   width: 100%;
-  opacity: 0.35;
+  opacity: 0.18;      /* softer glow */
+  filter: blur(4px);  /* smoother edges */
   pointer-events: none;
 }
 
-/* NEW badge 
-.new-icon {
-  position: absolute;
-  top: 10px;
-  left: 14px;
-  font-size: 14px;
-  color: orange;
-  animation: newPulse 1.8s ease-in-out infinite;
-} */
-
-/* Favorite star */
+/* Favorite star (slightly bigger than others) */
 .favorite-toggle {
   position: absolute;
   top: 10px;
   right: 14px;
   cursor: pointer;
-  width: 28px;
-  height: 28px;
+  width: 48px;   /* bigger */
+  height: 48px;
 }
 
 /* LEFT SIDE */
@@ -187,12 +178,14 @@
   gap: 14px;
 }
 
+/* PLAY BUTTON (slightly bigger) */
 .play-button svg {
-  width: 36px;
-  height: 36px;
+  width: 48px;   /* bigger */
+  height: 48px;
   cursor: pointer;
 }
 
+/* WAVEFORM BAR */
 .waveform {
   flex: 1;
   height: 40px;
@@ -209,16 +202,18 @@
   z-index: 2;
 }
 
+/* STAT ICONS (standard 40x40) */
+.stat svg {
+  width: 40px;
+  height: 40px;
+}
+
 .stat {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.stat svg {
-  width: 20px;
-  height: 20px;
-}
   
 /*.beat-list {
   display: flex;
