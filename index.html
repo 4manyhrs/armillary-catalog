@@ -73,22 +73,20 @@
   }
 /* NEW BEAT CARD DESIGN TESTING STARTS HERE */
 
-/* 900×300 reference ratio preserved */
 .beat-card {
   position: relative;
   width: 100%;
   max-width: 900px;
-  aspect-ratio: 3 / 1; /* FIX: prevents stretching */
+  aspect-ratio: 3 / 1;
   padding: 26px 28px;
   border-radius: 22px;
   overflow: hidden;
-  background: var(--panel-color, #000);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+
+  /* FIX: remove panel-color so glow stops tinting */
+  background: #000; 
 }
 
-/* PANEL + GLOW (proper layering + subtle hue) */
+/* PANEL + GLOW */
 .svg-panel,
 .svg-glow {
   position: absolute;
@@ -99,19 +97,24 @@
   pointer-events: none;
 }
 
-/* Panel sits BELOW content */
+/* Panel BELOW glow */
 .svg-panel {
   z-index: 0;
 }
 
-/* Glow sits ABOVE panel but BELOW content */
+/* Glow ABOVE panel but BELOW content */
 .svg-glow {
   z-index: 1;
-  opacity: 0.18;       /* FIX: subtle glow */
-  filter: blur(4px);   /* FIX: softens glow edges */
+
+  /* FIX: subtle, neutral glow */
+  opacity: 0.18;
+  filter: blur(2px);
+
+  /* FIX: prevent color blending */
+  mix-blend-mode: normal;
 }
 
-/* Content sits ABOVE everything */
+/* Content ABOVE everything */
 .beat-left,
 .beat-right,
 .favorite-toggle,
@@ -120,92 +123,6 @@
   z-index: 3;
 }
 
-/* Favorite star (bigger) */
-.favorite-toggle {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  cursor: pointer;
-  width: 48px;   /* FIX: bigger */
-  height: 48px;
-}
-
-/* LEFT SIDE */
-.beat-left {
-  width: 70%;
-}
-
-.beat-title {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.beat-artist {
-  margin: 4px 0;
-  font-size: 16px;
-  opacity: 0.85;
-}
-
-.beat-meta {
-  font-size: 14px;
-  opacity: 0.7;
-  margin-bottom: 8px;
-}
-
-.beat-tags {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.beat-tags .tag {
-  background: rgba(255,255,255,0.12);
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 12px;
-}
-
-.beat-files {
-  font-size: 13px;
-  margin-bottom: 14px;
-}
-
-.beat-files a {
-  color: #ffb366;
-  text-decoration: none;
-  font-style: italic;
-}
-
-/* Waveform row */
-.waveform-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-/* Play button (bigger) */
-.play-button svg {
-  width: 48px;   /* FIX: bigger */
-  height: 48px;
-  cursor: pointer;
-}
-
-/* Waveform bar */
-.waveform {
-  flex: 1;
-  height: 40px;
-  background: rgba(255,255,255,0.12);
-  border-radius: 8px;
-}
-
-/* RIGHT SIDE */
-.beat-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
-}
 
 /* Stat icons (40×40 standard) */
 .stat svg {
