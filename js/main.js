@@ -1,7 +1,7 @@
 
 
 
-  const showConstruction = true; // set to false to disable
+  const showConstruction = false; // set to false to disable
 
   if (!showConstruction) {
     document.getElementById("underConstruction").style.display = "none";
