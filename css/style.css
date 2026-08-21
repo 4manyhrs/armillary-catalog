@@ -633,12 +633,14 @@
   -webkit-text-stroke: 0px;
   opacity: 1;
   transform: scale(1.12);
-}#underConstruction {
+}
+
+/* #underConstruction {
   position: fixed;
   inset: 0;
   background: #000;
   color: #fff;
-  z-index: 999999; /* covers EVERYTHING */
+  z-index: 999999; /* covers EVERYTHING 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -659,4 +661,4 @@
   font-size: 20px;
   opacity: 0.8;
 }
-
+*/
