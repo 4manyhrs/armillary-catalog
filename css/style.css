@@ -47,7 +47,7 @@
   button:hover {
     opacity: 0.9;
   }
-/* NEW BEAT CARD DESIGN TESTING STARTS HERE */
+/* NEW BEAT CARD DESIGN TESTING STARTS HERE 
 
 .beat-card {
   position: relative;
@@ -62,7 +62,7 @@
   background: #000; 
 }
 
-/* PANEL + GLOW */
+/* PANEL + GLOW 
 .svg-panel,
 .svg-glow {
   position: absolute;
@@ -73,24 +73,24 @@
   pointer-events: none;
 }
 
-/* Panel BELOW glow */
+/* Panel BELOW glow 
 .svg-panel {
   z-index: 0;
 }
 
-/* Glow ABOVE panel but BELOW content */
+/* Glow ABOVE panel but BELOW content 
 .svg-glow {
   z-index: 1;
 
-  /* FIX: subtle, neutral glow */
+  /* FIX: subtle, neutral glow 
   opacity: 0.18;
   filter: blur(2px);
 
-  /* FIX: prevent color blending */
+  /* FIX: prevent color blending 
   mix-blend-mode: normal;
 }
 
-/* Content ABOVE everything */
+/* Content ABOVE everything 
 .beat-left,
 .beat-right,
 .favorite-toggle,
@@ -98,7 +98,7 @@
   position: relative;
   z-index: 3;
 }
-
+*/
 
 /* Stat icons (40×40 standard) */
 .stat svg {
